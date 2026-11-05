@@ -11,9 +11,12 @@ const osmLien = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=17/$
 ---
 
 <section class="section infos" id="infos" aria-labelledby="infos-titre">
-  <div class="conteneur infos__grille">
+  <div class="conteneur infos__grille" data-centre data-aimant>
     <div class="infos__texte">
-      <h2 id="infos-titre" data-apparition>Infos</h2>
+      <div class="infos__tete">
+        <p class="kotoba" data-apparition><span class="kotoba__ja" lang="ja">ご案内</span><span class="kotoba__fr">go-annai · les infos</span></p>
+        <h2 id="infos-titre" data-apparition>Infos</h2>
+      </div>
 
       <dl class="infos__liste">
         <div>
@@ -36,7 +39,12 @@ const osmLien = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=17/$
     </div>
 
     <div class="infos__plan">
-      <iframe title="Plan d’accès à TSUTSU (OpenStreetMap)" src={osm} loading="lazy" referrerpolicy="no-referrer"></iframe>
+      <!-- Le bandeau de crédits intégré au plan (2 lignes sur mobile) est masqué par le cadre ;
+           le crédit OpenStreetMap obligatoire est affiché juste en dessous, en plus compact. -->
+      <div class="infos__cadre">
+        <iframe title="Plan d’accès à TSUTSU (OpenStreetMap)" src={osm} loading="lazy" referrerpolicy="no-referrer"></iframe>
+        <p class="infos__credit">© <a href="https://www.openstreetmap.org/copyright" rel="noopener">Contributeurs OpenStreetMap</a></p>
+      </div>
       <a class="lien" href={osmLien} rel="noopener">Agrandir le plan</a>
     </div>
   </div>
@@ -111,13 +119,47 @@ const osmLien = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=17/$
     gap: 6px;
     justify-items: start;
   }
-  .infos__plan iframe {
+  .infos__cadre {
+    position: relative;
     width: 100%;
     aspect-ratio: 4 / 3;
+    overflow: hidden;
     border: 1px solid var(--ligne-forte);
     border-radius: var(--rayon);
     background: var(--surface);
+  }
+  .infos__cadre iframe {
+    display: block;
+    width: 100%;
+    height: calc(100% + 46px); /* le bas du plan (bandeau de crédits d'origine) dépasse et est masqué */
+    border: 0;
     filter: grayscale(0.35) brightness(0.92);
+  }
+  .infos__credit {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    max-width: 100%;
+    padding: 2px 8px;
+    border-top-left-radius: 6px;
+    background: rgba(18, 22, 31, 0.72);
+    color: var(--papier);
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .infos__credit a {
+    color: inherit;
+    text-underline-offset: 2px;
+  }
+  .infos__credit a {
+    position: relative;
+  }
+  .infos__credit a::after {
+    /* zone de clic agrandie (44 px de haut) sans grossir le bandeau */
+    content: '';
+    position: absolute;
+    inset: -20px -4px -8px;
   }
   @media (max-width: 899px) {
     .infos__grille {

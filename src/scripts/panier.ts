@@ -180,7 +180,7 @@ if (dialog) {
     const ok = [
       erreur('creneau', d.get('creneau') ? '' : 'Choisissez un créneau de retrait.'),
       erreur('nom', String(d.get('nom') ?? '').trim().length >= 2 ? '' : 'Indiquez votre nom.'),
-      erreur('telephone', /^(\+33|0)[1-9]\d{8}$/.test(tel) ? '' : 'Indiquez un numéro valide (ex. 06 12 34 56 78).'),
+      erreur('telephone', /^(\+33|0)[1-9]\d{8}$/.test(tel) ? '' : 'Indiquez un numéro valide (ex. 01 23 45 67 89).'),
     ];
     if (ok.includes(false)) {
       form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();

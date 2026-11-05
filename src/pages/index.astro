@@ -23,11 +23,12 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
       <!-- Photo du hero : passez src="/photos/hero.jpg" (et webp) pour remplacer l'illustration -->
       <Photo class="hero__photo" alt="Le comptoir de TSUTSU le soir, sous le rideau d’entrée et les lanternes allumées" prioritaire>
         <div class="scene" aria-hidden="true">
+          <!-- Noren (rideau d'entrée) : 手巻き寿司 = temaki-zushi, « sushi roulé à la main » -->
+          <!-- Tringle en bois : le noren et les lanternes y sont accrochés -->
+          <div class="scene__tringle"></div>
           <div class="scene__noren">
-            <span></span><span></span><span><b lang="ja">筒</b></span><span></span><span></span>
+            {['手', '巻', 'き', '寿', '司'].map((c, i) => <span style={`--pan: ${i}`}><b lang="ja">{c}</b></span>)}
           </div>
-          <div class="scene__lanterne scene__lanterne--g"><Lanterne id="lanterne-g" /></div>
-          <div class="scene__lanterne scene__lanterne--d"><Lanterne id="lanterne-d" /></div>
           <div class="scene__comptoir">
             <div class="scene__temaki scene__temaki--1"><Temaki roll={classique} /></div>
             <div class="scene__temaki scene__temaki--2"><Temaki roll={spicy} /></div>
@@ -35,6 +36,11 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
           </div>
         </div>
       </Photo>
+      <!-- Lanternes cliquables (au-dessus de l'illustration). À retirer si une vraie photo remplace la scène. -->
+      <div class="hero__lanternes">
+        <div class="scene__lanterne scene__lanterne--g"><span class="scene__corde"></span><Lanterne id="lanterne-g" kanji="寿司" delai={0.4} interactif /></div>
+        <div class="scene__lanterne scene__lanterne--d"><span class="scene__corde"></span><Lanterne id="lanterne-d" kanji="手巻" delai={0.9} interactif /></div>
+      </div>
     </div>
 
     <div class="conteneur hero__contenu">
@@ -67,11 +73,11 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
 
   <!-- Le comptoir -->
   <section class="section comptoir" id="comptoir" aria-labelledby="comptoir-titre">
-    <div class="conteneur comptoir__grille">
+    <div class="conteneur comptoir__grille" data-centre data-aimant>
       <!-- Photo du comptoir : passez src="/photos/comptoir.jpg" (et webp) pour remplacer l'illustration -->
-      <Photo class="comptoir__photo" ratio="4 / 3" alt="Un temaki tendu par-dessus le comptoir, sous la lanterne">
+      <div class="comptoir__media">
+      <Photo class="comptoir__photo" ratio="4 / 3" alt="Deux temaki posés sur un support en bois, sous la lanterne du comptoir">
         <div class="comptoir__scene" aria-hidden="true">
-          <div class="comptoir__lanterne"><Lanterne id="lanterne-comptoir" /></div>
           <div class="comptoir__planche"></div>
           <!-- support en bois où l'on pose les temaki, pointe en bas -->
           <div class="comptoir__temaki comptoir__temaki--1"><Temaki roll={rolls[3]} /></div>
@@ -79,7 +85,10 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
           <div class="comptoir__support"></div>
         </div>
       </Photo>
+        <div class="comptoir__lanterne"><Lanterne id="lanterne-comptoir" kanji="筒" delai={0.2} interactif /></div>
+      </div>
       <div class="comptoir__texte">
+        <p class="kotoba" data-apparition><span class="kotoba__ja" lang="ja">カウンター</span><span class="kotoba__fr">kauntā · le comptoir</span></p>
         <h2 id="comptoir-titre" data-apparition>Pourquoi au comptoir ?</h2>
         <p class="chapo" data-apparition style="--rang: 1">
           Un temaki n’attend pas : au bout de quelques minutes, la nori ramollit. Alors on le roule au moment où vous
@@ -91,8 +100,9 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
   </section>
 
   <!-- Ingrédients -->
-  <section class="section ingredients" aria-labelledby="ingredients-titre">
-    <div class="conteneur">
+  <section class="section ingredients" id="ingredients" aria-labelledby="ingredients-titre">
+    <div class="conteneur" data-centre data-aimant>
+      <p class="kotoba" data-apparition><span class="kotoba__ja" lang="ja">材料</span><span class="kotoba__fr">zairyō · les ingrédients</span></p>
       <h2 id="ingredients-titre" data-apparition>Ce qu’il y a dans le cône</h2>
       <ol class="ingredients__liste" role="list">
         {ingredientsVedettes.map((ing, i) => (
@@ -109,7 +119,7 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
   <!-- Offre étudiante : ticket de comptoir -->
   <section class="offre" aria-labelledby="offre-titre">
     <div class="conteneur">
-      <div class="ticket" data-apparition>
+      <div class="ticket" data-apparition data-centre data-aimant>
         <div class="ticket__haut">
           <p class="ticket__label mono">Ticket étudiant</p>
           <!-- 学割 (gakuwari) : « réduction étudiante » -->
@@ -139,12 +149,13 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
     min-height: 100svh;
     display: grid;
     align-items: center;
-    padding-top: calc(var(--header) + var(--noren) + 20px);
+    padding-top: calc(var(--header) + var(--tringle) + var(--noren) + 20px);
     padding-bottom: calc(var(--comptoir) + 24px);
     overflow: hidden;
     --noren: clamp(44px, 9vh, 104px);
     --comptoir: clamp(52px, 13vh, 150px);
-    --lanterne-l: clamp(46px, min(8vw, 15vh), 132px);
+    --lanterne-l: clamp(46px, min(7vw, 13vh), 116px);
+    --tringle: 8px;
   }
   .hero__fond {
     position: absolute;
@@ -170,9 +181,19 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
       var(--encre);
   }
   /* Noren : rideau d'entrée en cinq pans, sous l'en-tête */
-  .scene__noren {
+  .scene__tringle {
     position: absolute;
     top: var(--header);
+    left: 0;
+    right: 0;
+    height: var(--tringle);
+    z-index: 1;
+    background: linear-gradient(to bottom, #6b4a30, #3a2716);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  }
+  .scene__noren {
+    position: absolute;
+    top: calc(var(--header) + var(--tringle) - 1px);
     left: 0;
     right: 0;
     height: var(--noren);
@@ -188,6 +209,42 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
       var(--surface-2);
     border-radius: 0 0 4px 4px;
   }
+  /* Le rideau vacille : grand mouvement à l'arrivée, puis une brise légère et continue */
+  .scene__noren span {
+    transform-origin: 50% 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .scene__noren span {
+      animation:
+        noren-entree 2.4s calc(var(--pan) * 110ms) cubic-bezier(0.3, 0.6, 0.3, 1) both,
+        noren-vent 4.2s calc(2.4s + var(--pan) * 0.35s) ease-in-out infinite alternate;
+    }
+  }
+  @keyframes noren-entree {
+    0% {
+      transform: skewX(10deg) scaleY(0.96);
+    }
+    22% {
+      transform: skewX(-7deg);
+    }
+    44% {
+      transform: skewX(4deg);
+    }
+    66% {
+      transform: skewX(-2deg);
+    }
+    100% {
+      transform: skewX(0);
+    }
+  }
+  @keyframes noren-vent {
+    from {
+      transform: skewX(0);
+    }
+    to {
+      transform: skewX(2.2deg);
+    }
+  }
   .scene__noren b {
     font-family: var(--titre);
     font-weight: 700;
@@ -195,16 +252,55 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
     color: var(--papier);
     opacity: 0.9;
   }
+  .hero__lanternes {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .hero__lanternes :global(.lanterne) {
+    pointer-events: auto;
+  }
+  @media (max-width: 719px) {
+    /* lanternes trop petites sur téléphone : on retire les kanji, qui seraient illisibles */
+    .hero__lanternes :global(.lanterne__kanji) {
+      display: none;
+    }
+  }
+  /* Chaque lanterne pend à la tringle par une cordelette, sous le rideau, près des bords */
   .scene__lanterne {
     position: absolute;
-    top: calc(var(--header) + var(--noren) * 0.35);
+    top: var(--header);
     width: var(--lanterne-l);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .scene__corde {
+    position: relative;
+    width: 2px;
+    height: calc(var(--tringle) + var(--noren) + 4px);
+    margin-bottom: -2px;
+    background: #8a7a66;
+  }
+  .scene__corde::before {
+    /* crochet sur la tringle */
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: #2a1d12;
+    box-shadow: 0 0 0 1.5px #8a7a66;
   }
   .scene__lanterne--g {
-    left: clamp(12px, 7vw, 140px);
+    left: clamp(6px, 1.6vw, 36px);
   }
   .scene__lanterne--d {
-    right: clamp(12px, 7vw, 140px);
+    right: clamp(6px, 1.6vw, 36px);
   }
   /* Comptoir en bois, avec trois temaki posés */
   .scene__comptoir {
@@ -272,8 +368,10 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
       --noren: 40px;
       --comptoir: 44px;
     }
-    .scene__lanterne {
-      top: calc(var(--header) + 10px);
+    .hero {
+      --lanterne-l: 40px;
+      /* la lanterne pend sous le rideau : le texte commence en dessous */
+      padding-top: calc(var(--header) + var(--tringle) + var(--noren) + 96px);
     }
     .scene__temaki--2 {
       display: none;
@@ -282,6 +380,11 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
       width: 100%;
       flex-direction: column;
       align-items: stretch;
+    }
+  }
+  @media (max-width: 719px) and (max-height: 760px) {
+    .scene__temaki {
+      display: none;
     }
   }
   @media (max-height: 560px) {
@@ -343,9 +446,12 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
     position: absolute;
     inset: 0;
   }
+  .comptoir__media {
+    position: relative;
+  }
   .comptoir__lanterne {
     position: absolute;
-    top: -4%;
+    top: 0;
     left: 14%;
     width: 18%;
   }
@@ -435,7 +541,7 @@ const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
 
   /* ---------- Offre étudiante : ticket de comptoir ---------- */
   .offre {
-    padding-bottom: clamp(72px, 10vw, 136px);
+    padding-bottom: clamp(48px, 6.7vw, 90px);
   }
   .ticket {
     position: relative;

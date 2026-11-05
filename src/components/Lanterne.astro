@@ -1,73 +1,183 @@
 ---
 // Lanterne de papier (chōchin) qui éclaire le comptoir. Illustration originale en SVG.
-// Le halo est un dégradé radial ; le léger balancement est coupé si « réduire les animations ».
+// - Au chargement, elle s'allume avec un petit grésillement (délai réglable : prop « delai »).
+// - Ensuite, la flamme vacille de temps en temps et la lanterne se balance doucement.
+// - interactif : la lanterne devient un bouton ; un clic l'éteint ou la rallume (src/scripts/lanternes.ts).
+// Tout est coupé si l'appareil demande de réduire les animations (la lanterne reste allumée).
 interface Props {
   class?: string;
   id?: string;
+  kanji?: string; // caractères écrits verticalement sur le papier (ex. « 手巻 »)
+  delai?: number; // en secondes, avant l'allumage
+  interactif?: boolean;
 }
-const { class: classe, id = 'lanterne' } = Astro.props;
+const { class: classe, id = 'lanterne', kanji = '', delai = 0.3, interactif = false } = Astro.props;
+const lettres = [...kanji];
+const Balise = interactif ? 'button' : 'div';
 ---
 
-<svg class:list={['lanterne', classe]} viewBox="0 0 120 220" aria-hidden="true" focusable="false">
-  <defs>
-    <radialGradient id={`${id}-halo`} cx="0.5" cy="0.55" r="0.5">
-      <stop offset="0" stop-color="#f0a23b" stop-opacity="0.55" />
-      <stop offset="1" stop-color="#f0a23b" stop-opacity="0" />
-    </radialGradient>
-    <radialGradient id={`${id}-papier`} cx="0.45" cy="0.45" r="0.6">
-      <stop offset="0" stop-color="#ffe2a8" />
-      <stop offset="0.45" stop-color="#f0a23b" />
-      <stop offset="1" stop-color="#c4542b" />
-    </radialGradient>
-  </defs>
-  <circle class="lanterne__halo" cx="60" cy="122" r="60" fill={`url(#${id}-halo)`} />
-  <g class="lanterne__corps">
-    <line x1="60" y1="0" x2="60" y2="40" stroke="#5b5348" stroke-width="2" />
-    <rect x="40" y="38" width="40" height="12" rx="2" fill="#1a1a1a" />
-    <path d="M42 50 C 8 70, 8 170, 42 190 L 78 190 C 112 170, 112 70, 78 50 Z" fill={`url(#${id}-papier)`} />
-    <g stroke="#9c3f1f" stroke-width="1.4" fill="none" opacity="0.55">
-      <path d="M30 70 Q 60 76 90 70" />
-      <path d="M22 92 Q 60 99 98 92" />
-      <path d="M19 120 Q 60 127 101 120" />
-      <path d="M22 148 Q 60 155 98 148" />
-      <path d="M30 172 Q 60 178 90 172" />
+<Balise
+  class:list={['lanterne', classe, { 'lanterne--bouton': interactif }]}
+  style={`--delai: ${delai}s`}
+  {...(interactif
+    ? { type: 'button', 'aria-pressed': 'true', 'aria-label': 'Lanterne allumée : appuyer pour l’éteindre', 'data-lanterne': '' }
+    : { 'aria-hidden': 'true' })}
+>
+  <svg viewBox="0 0 120 220" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id={`${id}-halo`} cx="0.5" cy="0.55" r="0.5">
+        <stop offset="0" stop-color="#f0a23b" stop-opacity="0.6" />
+        <stop offset="1" stop-color="#f0a23b" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id={`${id}-papier`} cx="0.45" cy="0.45" r="0.6">
+        <stop offset="0" stop-color="#ffe2a8" />
+        <stop offset="0.45" stop-color="#f0a23b" />
+        <stop offset="1" stop-color="#c4542b" />
+      </radialGradient>
+    </defs>
+    <circle class="lanterne__halo" cx="60" cy="122" r="60" fill={`url(#${id}-halo)`} />
+    <g class="lanterne__corps">
+      <line x1="60" y1="0" x2="60" y2="40" stroke="#5b5348" stroke-width="2" />
+      <rect x="40" y="38" width="40" height="12" rx="2" fill="#1a1a1a" />
+      <path d="M42 50 C 8 70, 8 170, 42 190 L 78 190 C 112 170, 112 70, 78 50 Z" fill={`url(#${id}-papier)`} />
+      <!-- voile sombre : invisible quand la lanterne brille, opaque quand elle est éteinte -->
+      <path class="lanterne__ombre" d="M42 50 C 8 70, 8 170, 42 190 L 78 190 C 112 170, 112 70, 78 50 Z" fill="#2b2420" />
+      <g stroke="#9c3f1f" stroke-width="1.4" fill="none" opacity="0.55">
+        <path d="M30 70 Q 60 76 90 70" />
+        <path d="M22 92 Q 60 99 98 92" />
+        <path d="M19 120 Q 60 127 101 120" />
+        <path d="M22 148 Q 60 155 98 148" />
+        <path d="M30 172 Q 60 178 90 172" />
+      </g>
+      {lettres.length > 0 && (
+        <g class="lanterne__kanji" lang="ja">
+          {lettres.map((c, i) => (
+            <text x="60" y={120 + (i - (lettres.length - 1) / 2) * 36} text-anchor="middle" dominant-baseline="central">{c}</text>
+          ))}
+        </g>
+      )}
+      <rect x="40" y="188" width="40" height="12" rx="2" fill="#1a1a1a" />
+      <line x1="60" y1="200" x2="60" y2="218" stroke="#d9482b" stroke-width="3" stroke-linecap="round" />
     </g>
-    <rect x="40" y="188" width="40" height="12" rx="2" fill="#1a1a1a" />
-    <line x1="60" y1="200" x2="60" y2="218" stroke="#d9482b" stroke-width="3" stroke-linecap="round" />
-  </g>
-</svg>
+  </svg>
+</Balise>
 
 <style>
   .lanterne {
+    display: block;
+    width: 100%;
+  }
+  .lanterne svg {
     width: 100%;
     height: auto;
     overflow: visible;
   }
+  .lanterne--bouton {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lanterne--bouton:focus-visible {
+    outline: 3px solid var(--lanterne);
+    outline-offset: 4px;
+    border-radius: 8px;
+  }
   .lanterne__corps {
     transform-origin: 60px 0;
   }
+  .lanterne__kanji {
+    font-family: var(--titre);
+    font-weight: 700;
+    font-size: 30px;
+    fill: #7a2a12;
+    opacity: 0.85;
+  }
+  .lanterne__ombre {
+    opacity: 0;
+    transition: opacity 450ms ease;
+  }
+  .lanterne__halo {
+    transition: opacity 450ms ease;
+  }
+
+  /* Éteinte (après un clic) */
+  .lanterne.eteinte .lanterne__ombre {
+    opacity: 0.86;
+    animation: none;
+  }
+  .lanterne.eteinte .lanterne__halo {
+    opacity: 0;
+    animation: none;
+  }
+  .lanterne.eteinte .lanterne__kanji {
+    fill: #a08a70;
+    opacity: 0.35;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .lanterne__corps {
-      animation: balance 7s ease-in-out infinite alternate;
+      animation: balance 6s ease-in-out infinite alternate;
+      animation-delay: calc(var(--delai) * -3);
     }
-    .lanterne__halo {
-      animation: lueur 4.5s ease-in-out infinite alternate;
+    /* Allumage au chargement, puis vacillement irrégulier de la flamme */
+    .lanterne:not(.eteinte) .lanterne__ombre {
+      animation:
+        allumage-ombre 1.3s var(--delai) both,
+        vacille-ombre 7.3s calc(var(--delai) + 1.3s) infinite;
+    }
+    .lanterne:not(.eteinte) .lanterne__halo {
+      animation:
+        allumage-halo 1.3s var(--delai) both,
+        vacille-halo 7.3s calc(var(--delai) + 1.3s) infinite;
+    }
+    .lanterne--bouton:hover .lanterne__corps {
+      animation-duration: 2.4s;
     }
   }
   @keyframes balance {
     from {
-      transform: rotate(-1.6deg);
+      transform: rotate(-2.4deg);
     }
     to {
-      transform: rotate(1.6deg);
+      transform: rotate(2.4deg);
     }
   }
-  @keyframes lueur {
-    from {
-      opacity: 0.75;
-    }
-    to {
-      opacity: 1;
-    }
+  @keyframes allumage-ombre {
+    0% { opacity: 0.86; }
+    30% { opacity: 0.86; }
+    36% { opacity: 0.3; }
+    42% { opacity: 0.8; }
+    52% { opacity: 0.15; }
+    58% { opacity: 0.55; }
+    100% { opacity: 0; }
+  }
+  @keyframes allumage-halo {
+    0%, 30% { opacity: 0; }
+    36% { opacity: 0.7; }
+    42% { opacity: 0.1; }
+    52% { opacity: 0.9; }
+    58% { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+  @keyframes vacille-ombre {
+    0%, 61%, 100% { opacity: 0; }
+    63% { opacity: 0.35; }
+    65% { opacity: 0.05; }
+    67% { opacity: 0.45; }
+    70% { opacity: 0; }
+    88% { opacity: 0.12; }
+    90% { opacity: 0; }
+  }
+  @keyframes vacille-halo {
+    0%, 61%, 100% { opacity: 1; }
+    63% { opacity: 0.55; }
+    65% { opacity: 0.95; }
+    67% { opacity: 0.4; }
+    70% { opacity: 1; }
+    88% { opacity: 0.8; }
+    90% { opacity: 1; }
   }
 </style>

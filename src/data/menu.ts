@@ -122,12 +122,11 @@ export const rolls: Roll[] = [
 /** Une recette est « sans gluten » si le gluten ne figure pas dans ses allergènes. */
 export const sansGluten = (r: Roll) => !r.allergenes.includes('gluten');
 
-// Ingrédients mis en avant (section « Ce qu'il y a dans le cône »)
+// Ce que tous les temaki ont en commun (section « Ce qu'il y a dans le cône »), 4 éléments maximum.
+// Rien de propre à une seule recette ici : la garniture précise de chaque temaki est dans « rolls ».
 export const ingredientsVedettes = [
-  { id: 'riz', nom: 'Riz vinaigré', texte: 'Riz japonais cuit plusieurs fois par service, assaisonné au vinaigre de riz et servi encore tiède.' },
-  { id: 'nori', nom: 'Nori', texte: 'Feuille d’algue grillée, roulée au dernier moment : c’est elle qui fait le croquant.' },
-  { id: 'saumon', nom: 'Saumon', texte: 'Saumon frais tranché à la commande, jamais à l’avance.' },
-  { id: 'avocat', nom: 'Avocat', texte: 'Avocat mûr à point, coupé en lamelles fondantes.' },
-  { id: 'sesame', nom: 'Sésame', texte: 'Graines blanches et noires torréfiées pour le croquant.' },
-  { id: 'concombre', nom: 'Concombre', texte: 'Bâtonnets bien frais pour la touche qui croque.' },
+  { nom: 'Riz vinaigré', texte: 'Riz japonais cuit plusieurs fois par service, assaisonné au vinaigre de riz et servi encore tiède.' },
+  { nom: 'Nori grillée', texte: 'Une feuille d’algue grillée, roulée au dernier moment : c’est elle qui fait le croquant.' },
+  { nom: 'Garniture fraîche', texte: 'Poisson, poulet, tofu ou légumes, coupés à la commande, jamais à l’avance.' },
+  { nom: 'Sauces maison', texte: 'Mayo sriracha, teriyaki ou sucrée-salée selon la recette : toutes préparées sur place.' },
 ] as const;

@@ -28,9 +28,9 @@ export const restaurant = {
   // Point affiché sur le plan : voir COORDONNEES_PLAN ci-dessous
   carte: COORDONNEES_PLAN,
 
-  // Numéros FICTIFS : plage 06 39 98 xx xx réservée par l'ARCEP aux œuvres de fiction
-  telephone: { affichage: '06 39 98 00 12', lien: '+33639980012' },
-  whatsapp: '33639980012', // format international sans « + » (pour wa.me)
+  // Numéro FICTIF commun à toutes les démos Pyke Studio : à remplacer par celui du client
+  telephone: { affichage: '01 23 45 67 89', lien: '+33123456789' },
+  whatsapp: '33123456789', // format international sans « + » (pour wa.me) — fictif aussi
   email: 'bonjour@tsutsu.example',
 
   instagram: { pseudo: '@tsutsu.metz', url: 'https://www.instagram.com/tsutsu.metz' },

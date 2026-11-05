@@ -17,8 +17,9 @@ const prixMax = Math.max(...rolls.map((r) => r.prix));
 ---
 
 <section class="section carte" id="carte" aria-labelledby="carte-titre">
-  <div class="conteneur">
+  <div class="conteneur" data-centre data-haut data-aimant>
     <div class="carte__tete">
+      <p class="kotoba" data-apparition><span class="kotoba__ja" lang="ja">お品書き</span><span class="kotoba__fr">oshinagaki · la carte</span></p>
       <h2 id="carte-titre" data-apparition>La carte du comptoir</h2>
       <p class="chapo" data-apparition style="--rang: 1">
         Six temaki, roulés à la commande. De <span class="mono">{euros(prixMin)}</span> à <span class="mono">{euros(prixMax)}</span>.

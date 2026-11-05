@@ -22,6 +22,8 @@ const annee = new Date().getFullYear();
   </div>
   <div class="conteneur pied__legal">
     <p>© {annee} {restaurant.nom} · Restaurant fictif, site de démonstration</p>
+    <!-- ごちそうさまでした : ce qu'on dit au Japon à la fin d'un repas -->
+    <p class="pied__merci"><span lang="ja">ごちそうさまでした</span> · merci pour ce repas</p>
     <p>Réalisé par <a href={restaurant.realisePar.url} rel="noopener">{restaurant.realisePar.nom}</a></p>
   </div>
   <span class="cache" aria-live="polite" data-annonce-panier></span>
@@ -67,6 +69,12 @@ const annee = new Date().getFullYear();
   }
   .pied a:hover {
     color: var(--lanterne);
+  }
+  .pied__merci span {
+    font-family: var(--titre);
+    font-weight: 700;
+    color: var(--lanterne);
+    letter-spacing: 0.06em;
   }
   .pied__legal {
     display: flex;

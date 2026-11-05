@@ -38,7 +38,7 @@ if (form) {
     }
     const resultats = [
       erreur('nom', String(d.get('nom') ?? '').trim().length >= 2 ? '' : 'Indiquez votre nom.'),
-      erreur('telephone', /^(\+33|0)[1-9]\d{8}$/.test(tel) ? '' : 'Indiquez un numéro valide (ex. 06 12 34 56 78).'),
+      erreur('telephone', /^(\+33|0)[1-9]\d{8}$/.test(tel) ? '' : 'Indiquez un numéro valide (ex. 01 23 45 67 89).'),
       erreur('date', !date ? 'Choisissez une date.' : date < ajd ? 'Cette date est déjà passée.' : ''),
       erreur('heure', msgHeure),
     ];

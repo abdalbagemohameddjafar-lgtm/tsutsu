@@ -45,8 +45,8 @@ Tout est dans **`src/config/restaurant.ts`** :
 - `COORDONNEES_PLAN` : position du plan OpenStreetMap — **à remplacer par l'adresse réelle du client**.
 - `retrait` : intervalle entre deux créneaux (15 min), délai de préparation.
 
-> Les numéros actuels (06 39 98 …) sont dans la plage réservée par l'ARCEP à la fiction : ils ne
-> sonnent chez personne. Pensez à les remplacer pour un vrai restaurant.
+> Le numéro actuel (01 23 45 67 89) est un numéro d'exemple, le même sur toutes les démos Pyke Studio.
+> Pensez à le remplacer pour un vrai restaurant.
 
 ## Formulaires (réservation et commande par e-mail)
 

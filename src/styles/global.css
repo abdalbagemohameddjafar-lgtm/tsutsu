@@ -101,7 +101,7 @@ textarea {
   padding-inline: var(--marge);
 }
 .section {
-  padding-block: clamp(72px, 10vw, 136px);
+  padding-block: clamp(48px, 6.7vw, 90px);
 }
 
 /* ---------- Typographie ---------- */
@@ -274,15 +274,19 @@ h3 {
 @media (prefers-reduced-motion: no-preference) {
   .js [data-apparition] {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(12px);
     transition:
-      opacity 700ms var(--ease),
-      transform 700ms var(--ease);
-    transition-delay: calc(var(--rang, 0) * 80ms);
+      opacity 350ms var(--ease),
+      transform 350ms var(--ease);
+    transition-delay: calc(var(--rang, 0) * 50ms);
   }
   .js [data-apparition].visible {
     opacity: 1;
     transform: none;
+  }
+  /* Déjà à l'écran au chargement (ou arrivée par une ancre) : affiché tout de suite */
+  .js [data-apparition].immediat {
+    transition: none;
   }
 }
 
@@ -374,4 +378,54 @@ h3 {
   font-style: normal;
   font-display: swap;
   unicode-range: U+3000-30FF, U+3400-9FFF, U+FF00-FFEF;
+}
+
+/* ---------- Petit mot japonais au-dessus des titres de section ---------- */
+.kotoba {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-bottom: 4px;
+}
+.kotoba__ja {
+  font-family: var(--titre);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: var(--lanterne);
+}
+.kotoba__fr {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texte-2);
+}
+
+/* =====================================================================
+   Fond texturé, très léger :
+   - un grain de papier sur toute la page ;
+   - le motif japonais seigaiha (青海波, « vagues de la mer bleue »), visible surtout sur les bords
+     de l'écran et effacé au centre pour ne jamais gêner la lecture.
+   Les deux couches restent fixes derrière le contenu (aucun impact sur les clics).
+   ===================================================================== */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+body::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20' viewBox='0 0 40 20'%3E%3Cdefs%3E%3Cg id='v' fill='%2312161f' stroke='%23f2ebdd' stroke-width='0.8'%3E%3Ccircle r='20'/%3E%3Ccircle r='15'/%3E%3Ccircle r='10'/%3E%3Ccircle r='5'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23v' x='0' y='0'/%3E%3Cuse href='%23v' x='40' y='0'/%3E%3Cuse href='%23v' x='20' y='10'/%3E%3Cuse href='%23v' x='0' y='20'/%3E%3Cuse href='%23v' x='40' y='20'/%3E%3C/svg%3E");
+  background-size: 64px 32px;
+  opacity: 0.075;
+  -webkit-mask-image: radial-gradient(ellipse 70% 75% at 50% 50%, transparent 35%, #000 100%);
+  mask-image: radial-gradient(ellipse 70% 75% at 50% 50%, transparent 35%, #000 100%);
+}
+body::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.92 0 0 0 0 0.87 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity: 0.05;
 }
