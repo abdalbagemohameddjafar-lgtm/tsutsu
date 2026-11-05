@@ -1,0 +1,223 @@
+---
+// En-tête fixe : logo, liens, statut ouvert/fermé en temps réel, bouton « Commander » (ouvre le panier).
+import Logo from './Logo.astro';
+interface Props {
+  accueil?: boolean;
+}
+const { accueil = false } = Astro.props;
+const base = accueil ? '' : '/';
+const liens = [
+  { href: `${base}#tube`, texte: 'Le Tube' },
+  { href: `${base}#carte`, texte: 'La Carte' },
+  { href: `${base}#ingredients`, texte: 'Ingrédients' },
+  { href: `${base}#maison`, texte: 'La Maison' },
+];
+---
+
+<header class="entete">
+  <div class="conteneur entete__barre">
+    <a class="entete__logo" href={accueil ? '#top' : '/'}><Logo /><span class="cache"> — accueil</span></a>
+
+    <nav class="entete__nav" id="menu-principal" aria-label="Menu principal">
+      {liens.map((l) => <a href={l.href}>{l.texte}</a>)}
+    </nav>
+
+    <p class="statut" data-statut role="status" aria-live="polite">
+      <span class="statut__ja" data-statut-ja aria-hidden="true">営業時間</span><span data-statut-texte>Horaires : 11h – 22h</span>
+    </p>
+
+    <button class="bouton entete__commander" type="button" data-ouvrir-panier aria-haspopup="dialog">
+      Commander
+      <span class="entete__compte" data-compte-panier hidden>0</span>
+      <span class="cache" data-compte-panier-texte></span>
+    </button>
+
+    <button class="entete__burger" type="button" aria-expanded="false" aria-controls="menu-principal" aria-label="Ouvrir le menu">
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<script>
+  import { statut } from '../lib/horaires';
+
+  // ---------- Statut ouvert / fermé (recalculé chaque minute) ----------
+  const blocs = document.querySelectorAll<HTMLElement>('[data-statut]');
+  function majStatut() {
+    const s = statut();
+    blocs.forEach((b) => {
+      b.dataset.ouvert = String(s.ouvert);
+      const t = b.querySelector('[data-statut-texte]');
+      if (t) t.textContent = s.texte;
+      const ja = b.querySelector('[data-statut-ja]');
+      if (ja) ja.textContent = s.ja;
+    });
+  }
+  majStatut();
+  setInterval(majStatut, 60_000);
+
+  // ---------- Menu mobile ----------
+  const burger = document.querySelector<HTMLButtonElement>('.entete__burger')!;
+  const racine = document.documentElement;
+  function basculer(ouvrir: boolean) {
+    burger.setAttribute('aria-expanded', String(ouvrir));
+    burger.setAttribute('aria-label', ouvrir ? 'Fermer le menu' : 'Ouvrir le menu');
+    racine.classList.toggle('menu-ouvert', ouvrir);
+  }
+  burger.addEventListener('click', () => basculer(burger.getAttribute('aria-expanded') !== 'true'));
+  document.querySelectorAll('.entete__nav a').forEach((a) => a.addEventListener('click', () => basculer(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && racine.classList.contains('menu-ouvert')) {
+      basculer(false);
+      burger.focus();
+    }
+  });
+  matchMedia('(min-width: 1024px)').addEventListener('change', (e) => e.matches && basculer(false));
+</script>
+
+<style>
+  .entete {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 40;
+    height: var(--header);
+    background: rgb(244 242 238 / 0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1.5px solid var(--noir);
+  }
+  .entete__barre {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .entete__logo {
+    font-size: 26px;
+    text-decoration: none;
+    margin-right: auto;
+  }
+  .entete__nav {
+    display: flex;
+    gap: 26px;
+  }
+  .entete__nav a {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding-block: 6px;
+    background: linear-gradient(var(--rouge), var(--rouge)) 0 100% / 0 2px no-repeat;
+    transition: background-size 300ms var(--ease);
+  }
+  .entete__nav a:hover {
+    background-size: 100% 2px;
+  }
+
+  /* Statut ouvert / fermé */
+  .statut {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  /* Petite enseigne façon panneau japonais : 営業中 (ouvert) en rouge, 準備中 (fermé) en noir */
+  .statut__ja {
+    padding: 3px 6px;
+    border-radius: 3px;
+    background: var(--gris);
+    color: #fff;
+    font-family: var(--kanji);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+  }
+  .statut[data-ouvert='true'] .statut__ja {
+    background: var(--rouge-fonce);
+  }
+  .statut[data-ouvert='false'] .statut__ja {
+    background: var(--noir);
+  }
+
+  .entete__commander {
+    min-height: 44px;
+    padding: 0 20px;
+    font-size: 14px;
+    position: relative;
+  }
+  .entete__compte {
+    display: inline-grid;
+    place-items: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--noir);
+    font-size: 12px;
+  }
+
+  .entete__burger {
+    display: none;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .entete__burger span {
+    display: block;
+    width: 24px;
+    height: 2.5px;
+    margin: 5px auto;
+    background: var(--noir);
+    transition: transform 250ms var(--ease);
+  }
+  :global(.menu-ouvert) .entete__burger span:first-child {
+    transform: translateY(3.75px) rotate(45deg);
+  }
+  :global(.menu-ouvert) .entete__burger span:last-child {
+    transform: translateY(-3.75px) rotate(-45deg);
+  }
+
+  @media (max-width: 1023px) {
+    .entete__nav {
+      display: none;
+    }
+    .entete__burger {
+      display: block;
+    }
+    :global(.menu-ouvert) .entete__nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: fixed;
+      inset: var(--header) 0 0;
+      padding: 16px var(--marge) 40px;
+      background: var(--papier);
+      overflow-y: auto;
+    }
+    :global(.menu-ouvert) .entete__nav a {
+      font-family: var(--titre);
+      font-size: clamp(2.2rem, 10vw, 3.4rem);
+      line-height: 1;
+      padding: 18px 0;
+      border-bottom: 1.5px solid var(--noir);
+      background: none;
+    }
+    :global(.menu-ouvert) body {
+      overflow: hidden;
+    }
+  }
+  @media (max-width: 719px) {
+    .statut {
+      display: none;
+    }
+    .entete__barre {
+      gap: 12px;
+    }
+  }
+</style>

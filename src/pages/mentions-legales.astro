@@ -1,0 +1,26 @@
+---
+import PageTexte from '../layouts/PageTexte.astro';
+import { restaurant } from '../config/restaurant';
+---
+
+<PageTexte titre="Mentions légales · TSUTSU" h1="Mentions <span class='rouge'>légales.</span>" description="Mentions légales du site de démonstration TSUTSU.">
+  <p class="avertissement">Site de démonstration : TSUTSU est un restaurant fictif imaginé par {restaurant.realisePar.nom}. Les informations ci-dessous sont des exemples.</p>
+
+  <h2>Éditeur du site</h2>
+  <p>
+    {restaurant.nom} (restaurant fictif)<br />
+    {restaurant.adresse.rue}, {restaurant.adresse.codePostal} {restaurant.adresse.ville}<br />
+    Téléphone : {restaurant.telephone.affichage} · E-mail : {restaurant.email}<br />
+    Forme juridique, capital, RCS et SIRET : exemples non renseignés (site de démonstration).
+  </p>
+  <p>Conception et réalisation : <a href={restaurant.realisePar.url} rel="noopener">{restaurant.realisePar.nom}</a>.</p>
+
+  <h2>Hébergement</h2>
+  <p>Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, États-Unis — <a href="https://www.cloudflare.com" rel="noopener">cloudflare.com</a></p>
+
+  <h2>Propriété intellectuelle</h2>
+  <p>Les textes, illustrations et le logo de ce site sont la propriété de leurs auteurs. Toute reproduction sans autorisation est interdite.</p>
+
+  <h2>Données personnelles</h2>
+  <p>Voir la page <a href="/confidentialite">Confidentialité</a>.</p>
+</PageTexte>

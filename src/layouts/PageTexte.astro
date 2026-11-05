@@ -1,0 +1,51 @@
+---
+// Mise en page des pages de texte (mentions légales, confidentialité, 404).
+import Base from './Base.astro';
+interface Props {
+  titre: string;
+  h1: string;
+  description?: string;
+  noindex?: boolean;
+}
+const { titre, h1, description, noindex } = Astro.props;
+---
+
+<Base titre={titre} description={description} noindex={noindex}>
+  <div class="page-texte conteneur">
+    <h1 set:html={h1} />
+    <div class="page-texte__corps"><slot /></div>
+  </div>
+</Base>
+
+<style>
+  .page-texte {
+    padding-top: calc(var(--header) + clamp(40px, 6vw, 80px));
+    padding-bottom: clamp(64px, 8vw, 120px);
+  }
+  .page-texte h1 {
+    font-size: clamp(2.6rem, 1rem + 6vw, 6rem);
+    margin-bottom: 40px;
+  }
+  .page-texte__corps {
+    max-width: 72ch;
+  }
+  .page-texte__corps :global(h2) {
+    font-size: clamp(1.4rem, 1.1rem + 1vw, 2rem);
+    margin: 40px 0 12px;
+  }
+  .page-texte__corps :global(p + p) {
+    margin-top: 10px;
+  }
+  .page-texte__corps :global(a) {
+    color: var(--rouge-fonce);
+    font-weight: 600;
+  }
+  .page-texte__corps :global(.avertissement) {
+    padding: 14px 16px;
+    border: 2px solid var(--noir);
+    border-radius: 10px;
+    background: var(--kraft);
+    font-weight: 700;
+    margin-bottom: 24px;
+  }
+</style>

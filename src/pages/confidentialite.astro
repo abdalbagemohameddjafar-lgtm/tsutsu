@@ -1,0 +1,38 @@
+---
+import PageTexte from '../layouts/PageTexte.astro';
+import { restaurant } from '../config/restaurant';
+---
+
+<PageTexte titre="Confidentialité · TSUTSU" h1="Confiden&shy;tialité." description="Politique de confidentialité du site de démonstration TSUTSU.">
+  <p class="avertissement">Site de démonstration : contenu générique, à adapter pour un vrai restaurant.</p>
+
+  <h2>Données collectées</h2>
+  <p>
+    Quand vous réservez ou commandez, nous recevons votre nom, votre téléphone et les détails de votre demande
+    (date, heure, nombre de personnes ou contenu de la commande). Ces informations servent uniquement à traiter votre demande.
+  </p>
+
+  <h2>Panier</h2>
+  <p>
+    Votre panier est enregistré dans votre propre navigateur (stockage local) pour ne pas le perdre en changeant de page.
+    Il n’est envoyé à personne tant que vous ne validez pas votre commande. Vous pouvez le vider à tout moment.
+  </p>
+
+  <h2>Destinataires et outils</h2>
+  <p>
+    Les commandes envoyées par WhatsApp transitent par WhatsApp (Meta). Les formulaires envoyés par e-mail transitent par
+    Web3Forms. La carte du plan est fournie par OpenStreetMap. Le site est hébergé par Cloudflare.
+  </p>
+
+  <h2>Durée de conservation</h2>
+  <p>Les demandes sont conservées le temps de les traiter, puis supprimées au plus tard un an après.</p>
+
+  <h2>Vos droits</h2>
+  <p>
+    Vous pouvez demander l’accès, la rectification ou la suppression de vos données en écrivant à {restaurant.email}.
+    Vous pouvez aussi saisir la CNIL (<a href="https://www.cnil.fr" rel="noopener">cnil.fr</a>).
+  </p>
+
+  <h2>Cookies</h2>
+  <p>Ce site n’utilise aucun cookie publicitaire ni outil de mesure d’audience.</p>
+</PageTexte>

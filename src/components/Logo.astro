@@ -1,0 +1,29 @@
+---
+// Logo texte : « TSUTSU » en noir extra-gras + petit kanji 筒 en rouge.
+interface Props {
+  class?: string;
+}
+const { class: classe } = Astro.props;
+---
+
+<span class:list={['logo', classe]}>
+  TSUTSU<span class="logo__kanji" lang="ja">筒</span>
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.12em;
+    font-family: var(--titre);
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .logo__kanji {
+    font-family: var(--kanji);
+    font-weight: 800;
+    font-size: 0.55em;
+    color: var(--rouge);
+    line-height: 1;
+  }
+</style>

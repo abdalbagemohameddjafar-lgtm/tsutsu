@@ -1,0 +1,359 @@
+---
+// Section « La carte » : filtres en pastilles, grille des 6 rolls, fenêtre détaillée (ingrédients + allergènes).
+// Données : src/data/menu.ts · Logique : src/scripts/carte.ts
+import Roll from './Roll.astro';
+import { rolls, TAGS, TAGS_JA, ALLERGENES, sansGluten } from '../data/menu';
+import { euros } from '../lib/format';
+
+const filtres = [
+  { id: 'tous', texte: 'Tous' },
+  { id: 'vege', texte: 'Végé' },
+  { id: 'epice', texte: 'Épicé' },
+  { id: 'sansgluten', texte: 'Sans gluten' },
+];
+---
+
+<section class="section carte" id="carte" aria-labelledby="carte-titre">
+  <div class="conteneur">
+    <!-- お品書き (oshinagaki) : « la carte » dans un restaurant japonais -->
+    <p class="tategaki tategaki--marge" lang="ja" aria-hidden="true">お品書き</p>
+    <div class="carte__tete">
+      <h2 id="carte-titre" data-apparition>Six rollz.<br />Un seul <span class="rouge">format.</span></h2>
+      <p class="chapo" data-apparition style="--rang: 1">
+        Même tube, six recettes. Roulés à la commande, prêts en 5 minutes.
+        <a class="lien" href="/carte">Voir la carte complète et les allergènes</a>
+      </p>
+    </div>
+
+    <div class="carte__filtres" role="group" aria-label="Filtrer la carte">
+      {filtres.map((f, i) => (
+        <button class="pastille" type="button" data-filtre={f.id} aria-pressed={i === 0 ? 'true' : 'false'}>{f.texte}</button>
+      ))}
+    </div>
+    <p class="cache" data-filtre-annonce aria-live="polite"></p>
+
+    <ul class="carte__grille" role="list">
+      {rolls.map((r, i) => (
+        <li
+          class="roll-carte"
+          data-tags={[...r.tags, sansGluten(r) ? 'sansgluten' : ''].join(' ')}
+          data-apparition
+          style={`--rang: ${i % 3}`}
+        >
+          <button class="roll-carte__ouvrir" type="button" data-ouvrir-roll={r.id} aria-haspopup="dialog">
+            <span class="roll-carte__visuel"><Roll roll={r} /></span>
+            {r.tags.includes('bestseller') && <span class="hanko roll-carte__hanko" lang="ja" aria-hidden="true">{TAGS_JA.bestseller}</span>}
+            <span class="roll-carte__nom">{r.nom}</span>
+            <span class="ja roll-carte__ja" lang="ja">{r.nomJa}</span>
+            <span class="cache">, voir les ingrédients et allergènes</span>
+          </button>
+          <ul class="roll-carte__tags" role="list">
+            {r.tags.map((t) => <li class={`tag tag--${t}`}><span class="tag__ja" lang="ja" aria-hidden="true">{TAGS_JA[t]}</span>{TAGS[t]}</li>)}
+            {sansGluten(r) && <li class="tag tag--sg">Sans gluten</li>}
+          </ul>
+          <p class="roll-carte__desc">{r.description}</p>
+          <div class="roll-carte__pied">
+            <span class="roll-carte__prix">{euros(r.prix)}</span>
+            <button class="bouton bouton--noir roll-carte__ajouter" type="button" data-ajouter={r.id}>
+              <span data-texte-bouton>+ Ajouter</span><span class="cache"> {r.nom} au panier</span>
+            </button>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Fenêtres détaillées (une par roll) -->
+  {rolls.map((r) => (
+    <dialog class="modale" id={`roll-${r.id}`} aria-labelledby={`roll-${r.id}-titre`}>
+      <div class="modale__corps">
+        <button class="modale__fermer" type="button" data-fermer-modale aria-label="Fermer">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" /></svg>
+        </button>
+        <div class="modale__visuel"><Roll roll={r} /></div>
+        <div class="modale__texte">
+          <h3 id={`roll-${r.id}-titre`}>{r.nom}</h3>
+          <p class="ja modale__ja" lang="ja">{r.nomJa}</p>
+          <p class="modale__prix">{euros(r.prix)}</p>
+          <p>{r.description}</p>
+          <h4>Ingrédients</h4>
+          <p>{r.ingredients.join(', ')}.</p>
+          <h4>Allergènes</h4>
+          <ul class="modale__allergenes" role="list">
+            {r.allergenes.map((a) => <li>{ALLERGENES[a]}</li>)}
+          </ul>
+          <button class="bouton modale__ajouter" type="button" data-ajouter={r.id}>
+            <span data-texte-bouton>+ Ajouter au panier</span>
+          </button>
+        </div>
+      </div>
+    </dialog>
+  ))}
+</section>
+
+<script>
+  import '../scripts/carte.ts';
+</script>
+
+<style>
+  .carte__tete {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 32px;
+    align-items: end;
+    margin-bottom: 40px;
+  }
+  .carte__tete .lien {
+    display: inline-block;
+    margin-top: 12px;
+  }
+  .carte__filtres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .carte__grille {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .roll-carte {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    background: #fff;
+    border: 2px solid var(--noir);
+    border-radius: var(--rayon);
+    transition:
+      transform 300ms var(--ease),
+      box-shadow 300ms var(--ease);
+  }
+  .roll-carte[hidden] {
+    display: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .roll-carte:hover {
+      transform: translateY(-4px);
+      box-shadow: 6px 6px 0 var(--noir);
+    }
+    .roll-carte:hover .roll-carte__visuel {
+      transform: rotate(18deg) scale(1.04);
+    }
+  }
+  .roll-carte__ouvrir {
+    position: relative;
+    display: grid;
+    gap: 14px;
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+  }
+  .roll-carte__visuel {
+    display: block;
+    width: 72%;
+    margin: 8px auto 4px;
+    transition: transform 600ms var(--ease);
+  }
+  .roll-carte__nom {
+    font-family: var(--titre);
+    text-transform: uppercase;
+    font-size: clamp(1.4rem, 1.1rem + 0.8vw, 1.8rem);
+    line-height: 1;
+  }
+  .roll-carte__ouvrir:hover .roll-carte__nom {
+    color: var(--rouge-fonce);
+  }
+  .roll-carte__ja {
+    margin-top: -8px;
+    font-size: 14px;
+    color: var(--rouge-fonce);
+  }
+  /* Tampon 人気 (populaire) posé en haut à droite de l'illustration */
+  .roll-carte__hanko {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  .roll-carte__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 26px;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    background: var(--papier);
+    border: 1.5px solid var(--noir);
+  }
+  .tag__ja {
+    font-family: var(--kanji);
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+  .tag--epice {
+    background: var(--rouge-fonce);
+    border-color: var(--rouge-fonce);
+    color: #fff;
+  }
+  .tag--bestseller {
+    background: var(--noir);
+    color: #fff;
+  }
+  .tag--vege {
+    background: #d9ecc4;
+  }
+  .roll-carte__desc {
+    color: var(--gris);
+    flex: 1;
+  }
+  .roll-carte__pied {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1.5px dashed var(--filet);
+  }
+  .roll-carte__prix {
+    font-family: var(--titre);
+    font-size: 1.6rem;
+  }
+  .roll-carte__ajouter {
+    min-height: 46px;
+    padding: 0 18px;
+    font-size: 14px;
+  }
+  :global(.ajoute) {
+    background: #1d7a43 !important;
+    border-color: #1d7a43 !important;
+  }
+
+  /* Fenêtre détaillée */
+  .modale {
+    width: min(92vw, 820px);
+    max-height: 90vh;
+    padding: 0;
+    border: 2px solid var(--noir);
+    border-radius: var(--rayon);
+    background: var(--papier);
+    color: var(--noir);
+  }
+  .modale::backdrop {
+    background: rgb(21 21 21 / 0.6);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .modale[open] {
+      animation: monte 360ms var(--ease);
+    }
+  }
+  @keyframes monte {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
+    }
+  }
+  .modale__corps {
+    position: relative;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 28px;
+    padding: 32px;
+    align-items: center;
+  }
+  .modale__fermer {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+  }
+  .modale__fermer:hover {
+    background: rgb(21 21 21 / 0.08);
+  }
+  .modale__texte {
+    display: grid;
+    gap: 10px;
+  }
+  .modale__texte h3 {
+    font-size: clamp(1.8rem, 1.3rem + 1.5vw, 2.6rem);
+  }
+  .modale__texte h4 {
+    margin: 10px 0 0;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .modale__ja {
+    margin-top: -6px;
+    color: var(--rouge-fonce);
+    font-size: 1.1rem;
+  }
+  .modale__prix {
+    font-family: var(--titre);
+    font-size: 1.5rem;
+    color: var(--rouge-fonce);
+  }
+  .modale__allergenes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .modale__allergenes li {
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--noir);
+    color: var(--papier);
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .modale__ajouter {
+    justify-self: start;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 1023px) {
+    .carte__grille {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .carte__tete {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 639px) {
+    .carte__grille {
+      grid-template-columns: 1fr;
+    }
+    .modale__corps {
+      grid-template-columns: 1fr;
+      padding: 24px;
+    }
+    .modale__visuel {
+      width: 60%;
+      margin-inline: auto;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .roll-carte,
+    .roll-carte__visuel {
+      transition: none;
+    }
+  }
+</style>

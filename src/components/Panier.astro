@@ -1,0 +1,247 @@
+---
+// Panier click & collect : tiroir latéral (plein écran sur mobile), sans paiement en ligne.
+// La commande part sur WhatsApp (message récapitulatif) ou, en option, par e-mail (Web3Forms).
+// Logique : src/scripts/panier.ts
+import { restaurant, web3formsKey } from '../config/restaurant';
+import { rolls } from '../data/menu';
+
+const catalogue = rolls.map((r) => ({ id: r.id, nom: r.nom, prix: r.prix }));
+---
+
+<dialog
+  class="panier"
+  id="panier"
+  aria-labelledby="panier-titre"
+  data-catalogue={JSON.stringify(catalogue)}
+  data-whatsapp={restaurant.whatsapp}
+  data-cle={web3formsKey}
+  data-nom={restaurant.nom}
+>
+  <div class="panier__tete">
+    <h2 id="panier-titre" class="panier__titre">Ma commande</h2>
+    <button class="panier__fermer" type="button" data-fermer-panier aria-label="Fermer le panier">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" /></svg>
+    </button>
+  </div>
+
+  <p class="panier__info">Click & collect · paiement sur place au retrait</p>
+
+  <!-- Panier vide -->
+  <div class="panier__vide" data-panier-vide>
+    <p>Votre panier est vide.</p>
+    <a class="bouton bouton--noir" href="/#carte" data-fermer-panier>Voir la carte</a>
+  </div>
+
+  <!-- Contenu -->
+  <div class="panier__contenu" data-panier-contenu hidden>
+    <ul class="panier__liste" data-panier-liste aria-label="Articles de la commande"></ul>
+
+    <p class="panier__total">
+      <span>Total</span>
+      <strong data-panier-total>0,00 €</strong>
+    </p>
+
+    <form class="panier__form" data-panier-form novalidate>
+      <label class="champ">
+        Créneau de retrait <span data-creneau-jour class="discret"></span>
+        <select name="creneau" required data-creneaux></select>
+        <span class="erreur" data-erreur="creneau" hidden></span>
+      </label>
+      <label class="champ">
+        Votre nom
+        <input name="nom" type="text" autocomplete="name" required />
+        <span class="erreur" data-erreur="nom" hidden></span>
+      </label>
+      <label class="champ">
+        Votre téléphone
+        <input name="telephone" type="tel" autocomplete="tel" inputmode="tel" required />
+        <span class="erreur" data-erreur="telephone" hidden></span>
+      </label>
+
+      <button class="bouton panier__envoyer" type="submit" data-envoi="whatsapp">
+        Envoyer ma commande <span class="fleche" aria-hidden="true">→</span>
+      </button>
+      <p class="panier__aide discret">La commande s’ouvre dans WhatsApp, prête à envoyer.</p>
+      <button class="lien panier__mail" type="submit" data-envoi="email">Pas de WhatsApp ? Envoyer par e-mail</button>
+      <p class="panier__retour" data-panier-retour role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</dialog>
+
+<script>
+  import '../scripts/panier.ts';
+</script>
+
+<style>
+  .panier {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: min(100%, 460px);
+    height: 100%;
+    max-height: none;
+    max-width: none;
+    margin: 0;
+    padding: 0 0 32px;
+    border: 0;
+    border-left: 2px solid var(--noir);
+    background: var(--papier);
+    color: var(--noir);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .panier::backdrop {
+    background: rgb(21 21 21 / 0.55);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .panier[open] {
+      animation: glisse 380ms var(--ease);
+    }
+    .panier[open]::backdrop {
+      animation: fondu 380ms ease;
+    }
+  }
+  @keyframes glisse {
+    from {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes fondu {
+    from {
+      opacity: 0;
+    }
+  }
+  @media (max-width: 559px) {
+    .panier {
+      width: 100%;
+      border-left: 0;
+    }
+  }
+
+  .panier__tete {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    background: var(--noir);
+    color: var(--papier);
+  }
+  .panier__titre {
+    font-size: 30px;
+    line-height: 1;
+  }
+  .panier__fermer {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+  .panier__fermer:hover {
+    background: rgb(255 255 255 / 0.12);
+  }
+  .panier__info {
+    padding: 12px 24px;
+    background: var(--kraft);
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .panier__vide {
+    padding: 40px 24px;
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+  }
+  .panier__contenu {
+    padding: 8px 24px 0;
+  }
+  .panier__liste :global(li) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px 16px;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1.5px solid var(--filet);
+  }
+  .panier__liste :global(.ligne-nom) {
+    font-weight: 800;
+  }
+  .panier__liste :global(.ligne-prix) {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .panier__liste :global(.quantite) {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1.5px solid var(--noir);
+    border-radius: 999px;
+    width: fit-content;
+  }
+  .panier__liste :global(.quantite button) {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .panier__liste :global(.quantite button:hover) {
+    background: rgb(21 21 21 / 0.08);
+  }
+  .panier__liste :global(.quantite output) {
+    min-width: 22px;
+    text-align: center;
+    font-weight: 800;
+  }
+  .panier__total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 20px 0;
+    font-size: 18px;
+  }
+  .panier__total strong {
+    font-family: var(--titre);
+    font-weight: 400;
+    font-size: 30px;
+  }
+  .panier__form {
+    display: grid;
+    gap: 16px;
+  }
+  .panier__envoyer {
+    width: 100%;
+    margin-top: 8px;
+  }
+  .panier__aide {
+    font-size: 14px;
+    text-align: center;
+  }
+  .panier__mail {
+    justify-self: center;
+    border: 0;
+    background: none;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .panier__retour:empty {
+    display: none;
+  }
+  .panier__retour {
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1.5px solid var(--noir);
+    font-weight: 600;
+  }
+</style>

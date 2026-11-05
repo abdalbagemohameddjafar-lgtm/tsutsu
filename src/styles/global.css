@@ -1,0 +1,395 @@
+/* =====================================================================
+   TSUTSU — styles globaux. Éditorial + streetwear.
+   Titres : Archivo Black (majuscules) · Texte : Inter
+   ===================================================================== */
+
+/* Dela Gothic One allégée : seulement les caractères japonais du site (11 Ko au lieu de 920).
+   À régénérer après un ajout de texte japonais : python outils/police-japonaise.py */
+@font-face {
+  font-family: 'Dela Gothic One';
+  src: url('/fonts/dela-gothic-one-tsutsu.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --papier: #f4f2ee;
+  --noir: #151515;
+  --rouge: #e63027; /* rouge de marque : grands titres et aplats */
+  --rouge-fonce: #c9241b; /* boutons et petits textes rouges : contraste AA avec le blanc */
+  --kraft: #c9a27e;
+  --kraft-fonce: #a57d58;
+  --gris: #5b5852; /* texte secondaire : 6,6:1 sur le papier */
+  --filet: rgb(21 21 21 / 0.14);
+
+  --titre: 'Archivo Black', 'Arial Black', Impact, sans-serif;
+  --texte: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Japonais en petit (logo, badges, noms des rolls) : gothique du système, lisible même à 11 px.
+     Japonais en grand (étiquettes verticales, bande, chiffres) : Dela Gothic One, très grasse,
+     hébergée avec le site — trop grasse en petit (les kanji à nombreux traits se bouchent). */
+  --kanji: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic', 'YuGothic', 'Noto Sans JP', 'Noto Sans CJK JP', 'Meiryo', sans-serif;
+  --kanji-display: 'Dela Gothic One', var(--kanji);
+
+  --marge: clamp(20px, 4vw, 56px);
+  --max: 1360px;
+  --header: 68px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --rayon: 14px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
+  scroll-padding-top: calc(var(--header) + 12px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--noir);
+  font: 400 17px/1.6 var(--texte);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure {
+  margin: 0;
+}
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+a {
+  color: inherit;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+:focus-visible {
+  outline: 3px solid var(--rouge-fonce);
+  outline-offset: 3px;
+}
+::selection {
+  background: var(--rouge);
+  color: #fff;
+}
+
+/* ---------- Mise en page ---------- */
+.conteneur {
+  position: relative; /* repère des étiquettes verticales placées dans la marge */
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--marge);
+}
+.section {
+  padding-block: clamp(72px, 10vw, 140px);
+}
+
+/* ---------- Typographie ---------- */
+.titre,
+h1,
+h2 {
+  font-family: var(--titre);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.88;
+}
+h1 {
+  font-size: clamp(3.2rem, 1rem + 9.5vw, 9rem);
+}
+h2 {
+  font-size: clamp(2.6rem, 1rem + 6.5vw, 7rem);
+}
+h3 {
+  font-family: var(--titre);
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: clamp(1.25rem, 1rem + 0.8vw, 1.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+.rouge {
+  color: var(--rouge);
+}
+.etiquette {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1.5px solid var(--noir);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.chapo {
+  font-size: clamp(1.05rem, 1rem + 0.3vw, 1.25rem);
+  line-height: 1.55;
+  max-width: 44ch;
+}
+.discret {
+  color: var(--gris);
+}
+
+/* ---------- Boutons ---------- */
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-height: 52px;
+  padding: 0 26px;
+  border: 2px solid var(--rouge-fonce);
+  border-radius: 999px;
+  background: var(--rouge-fonce);
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    transform 160ms ease-out;
+}
+.bouton:hover {
+  background: var(--noir);
+  border-color: var(--noir);
+}
+.bouton:active {
+  transform: scale(0.97);
+}
+.bouton .fleche {
+  transition: transform 300ms var(--ease);
+}
+.bouton:hover .fleche {
+  transform: translateX(4px);
+}
+.bouton--noir {
+  background: var(--noir);
+  border-color: var(--noir);
+}
+.bouton--noir:hover {
+  background: var(--rouge-fonce);
+  border-color: var(--rouge-fonce);
+}
+.bouton--contour {
+  background: transparent;
+  color: var(--noir);
+  border-color: var(--noir);
+}
+.bouton--contour:hover {
+  background: var(--noir);
+  color: #fff;
+}
+.lien {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+  transition: color 200ms ease, text-underline-offset 200ms ease;
+}
+.lien:hover {
+  color: var(--rouge-fonce);
+  text-underline-offset: 8px;
+}
+
+/* ---------- Pastilles (filtres) ---------- */
+.pastille {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1.5px solid var(--noir);
+  border-radius: 999px;
+  background: transparent;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 200ms ease, color 200ms ease, transform 160ms ease-out;
+}
+.pastille:hover {
+  background: rgb(21 21 21 / 0.06);
+}
+.pastille[aria-pressed='true'] {
+  background: var(--noir);
+  color: var(--papier);
+}
+.pastille:active {
+  transform: scale(0.97);
+}
+
+/* ---------- Apparitions au scroll (seulement avec JS et sans « réduire les animations ») ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-apparition] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 700ms var(--ease),
+      transform 700ms var(--ease);
+    transition-delay: calc(var(--rang, 0) * 80ms);
+  }
+  .js [data-apparition].visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Utilitaires ---------- */
+[hidden] {
+  display: none !important; /* l'attribut hidden gagne toujours sur display: grid/flex */
+}
+.cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.evitement:focus {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  width: auto;
+  height: auto;
+  clip-path: none;
+  padding: 12px 16px;
+  background: var(--noir);
+  color: #fff;
+}
+
+/* ---------- Champs de formulaire ---------- */
+.champ {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.champ input,
+.champ select,
+.champ textarea {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--noir);
+  border-radius: 10px;
+  background: #fff;
+  font-weight: 400;
+  font-size: 16px; /* 16 px : pas de zoom automatique sur iPhone */
+}
+.champ :is(input, select, textarea):focus-visible {
+  outline: 3px solid var(--rouge-fonce);
+  outline-offset: 1px;
+}
+.champ .erreur {
+  color: var(--rouge-fonce);
+  font-weight: 600;
+  font-size: 14px;
+}
+.champ [aria-invalid='true'] {
+  border-color: var(--rouge-fonce);
+}
+
+/* =====================================================================
+   Touches japonaises
+   ===================================================================== */
+
+/* Texte vertical (tategaki) : étiquettes décoratives des sections */
+.tategaki {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--kanji-display);
+  font-size: clamp(1.3rem, 0.9rem + 1.4vw, 2.3rem);
+  letter-spacing: 0.12em;
+  line-height: 1;
+  color: var(--rouge-fonce); /* rouge profond : contraste AA sur le papier */
+  user-select: none;
+}
+
+/* Tampon hanko : sceau carré rouge, kanji blancs, légèrement de travers */
+.hanko {
+  display: inline-grid;
+  place-items: center;
+  padding: 6px;
+  min-width: 46px;
+  min-height: 46px;
+  background: var(--rouge-fonce);
+  color: #fff;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 2px var(--rouge-fonce), inset 0 0 0 4px rgb(255 255 255 / 0.85);
+  font-family: var(--kanji);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.05;
+  writing-mode: vertical-rl;
+  letter-spacing: 0.05em;
+  rotate: -8deg;
+}
+
+/* Motif de vagues seigaiha (青海波) — dégradés CSS, aucun fichier image.
+   Les deux couleurs se règlent avec --fond et --trait. */
+.seigaiha {
+  --fond: var(--noir);
+  --trait: #2c2c2c;
+  background-color: var(--fond);
+  background-image:
+    radial-gradient(circle at 100% 150%, var(--fond) 24%, var(--trait) 24% 28%, var(--fond) 28% 36%, var(--trait) 36% 40%, transparent 40%),
+    radial-gradient(circle at 0 150%, var(--fond) 24%, var(--trait) 24% 28%, var(--fond) 28% 36%, var(--trait) 36% 40%, transparent 40%),
+    radial-gradient(circle at 50% 100%, var(--trait) 10%, var(--fond) 10% 23%, var(--trait) 23% 30%, var(--fond) 30% 43%, var(--trait) 43% 50%, var(--fond) 50% 63%, var(--trait) 63% 71%, transparent 71%),
+    radial-gradient(circle at 100% 50%, var(--trait) 5%, var(--fond) 5% 15%, var(--trait) 15% 20%, var(--fond) 20% 29%, var(--trait) 29% 34%, var(--fond) 34% 44%, var(--trait) 44% 49%, transparent 49%),
+    radial-gradient(circle at 0 50%, var(--trait) 5%, var(--fond) 5% 15%, var(--trait) 15% 20%, var(--fond) 20% 29%, var(--trait) 29% 34%, var(--fond) 34% 44%, var(--trait) 44% 49%, transparent 49%);
+  background-size: 96px 48px;
+}
+.seigaiha--rouge {
+  --fond: var(--rouge);
+  --trait: #d22a21;
+}
+
+/* Petit texte japonais sous un titre français */
+.ja {
+  font-family: var(--kanji);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* Étiquette verticale placée dans la marge droite de la section (ne chevauche jamais le texte) */
+.tategaki--marge {
+  position: absolute;
+  top: 0;
+  right: calc(var(--marge) / 2);
+  transform: translateX(50%);
+  font-size: clamp(13px, calc(var(--marge) * 0.6), 2.1rem);
+}

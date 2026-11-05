@@ -1,0 +1,112 @@
+---
+// Gabarit commun : <head> (SEO, Open Graph, JSON-LD Restaurant), en-tête, panier, pied de page.
+import '@fontsource/archivo-black/latin-400.css';
+import '@fontsource-variable/inter/wght.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Panier from '../components/Panier.astro';
+import { restaurant, horaires } from '../config/restaurant';
+import { rolls } from '../data/menu';
+
+interface Props {
+  titre?: string;
+  description?: string;
+  /** false sur les pages secondaires : les liens du menu pointent vers « /#ancre » */
+  accueil?: boolean;
+  noindex?: boolean;
+}
+const {
+  titre = 'TSUTSU · Le sushi qui tient dans la main · Metz',
+  description = restaurant.description,
+  accueil = false,
+  noindex = false,
+} = Astro.props;
+
+const canonique = new URL(Astro.url.pathname, Astro.site);
+const JOURS_SCHEMA = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+// Données structurées (Google) : restaurant, horaires et carte
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Restaurant',
+  name: restaurant.nom,
+  description: restaurant.description,
+  url: restaurant.site,
+  image: new URL('/og-tsutsu.png', Astro.site).href,
+  telephone: restaurant.telephone.lien,
+  servesCuisine: ['Japonaise', 'Sushi'],
+  priceRange: '€',
+  acceptsReservations: true,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: restaurant.adresse.rue,
+    postalCode: restaurant.adresse.codePostal,
+    addressLocality: restaurant.adresse.ville,
+    addressCountry: restaurant.adresse.pays,
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: restaurant.carte.lat, longitude: restaurant.carte.lon },
+  openingHoursSpecification: horaires.map((h) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: h.jours.map((j) => JOURS_SCHEMA[j]),
+    opens: h.ouverture,
+    closes: h.fermeture,
+  })),
+  sameAs: [restaurant.instagram.url],
+  hasMenu: {
+    '@type': 'Menu',
+    hasMenuSection: {
+      '@type': 'MenuSection',
+      name: 'Rolls en tube',
+      hasMenuItem: rolls.map((r) => ({
+        '@type': 'MenuItem',
+        name: r.nom,
+        description: r.description,
+        offers: { '@type': 'Offer', price: r.prix.toFixed(2), priceCurrency: 'EUR' },
+        ...(r.tags.includes('vege') ? { suitableForDiet: 'https://schema.org/VegetarianDiet' } : {}),
+      })),
+    },
+  },
+};
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{titre}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonique} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#f4f2ee" />
+    <meta property="og:type" content="restaurant" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="TSUTSU" />
+    <meta property="og:title" content={titre} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonique} />
+    <meta property="og:image" content={new URL('/og-tsutsu.png', Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <!-- Ajoute .js tout de suite : les animations d'apparition ne cachent rien sans JavaScript -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <a class="cache evitement" href="#contenu">Aller au contenu</a>
+    <Header accueil={accueil} />
+    <main id="contenu">
+      <slot />
+    </main>
+    <Footer accueil={accueil} />
+    <Panier />
+    <script>
+      import '../scripts/apparitions.ts';
+    </script>
+  </body>
+</html>

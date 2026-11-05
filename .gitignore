@@ -1,0 +1,12 @@
+# compilation
+dist/
+.astro/
+# dépendances
+node_modules/
+# variables d'environnement (ne jamais publier la clé)
+.env
+.env.*
+!.env.example
+# divers
+npm-debug.log*
+.DS_Store

@@ -1,0 +1,68 @@
+---
+// Illustration d'un roll : coupe de maki vue de dessus (algue, riz, garniture colorée).
+// Les couleurs viennent de src/data/menu.ts (visuel.garniture et visuel.topping).
+import type { Roll } from '../data/menu';
+interface Props {
+  roll: Roll;
+  taille?: number;
+}
+const { roll, taille = 200 } = Astro.props;
+const { garniture, topping } = roll.visuel;
+
+// Grains de riz : petites ellipses blanches réparties dans l'anneau de riz
+const grains: { x: number; y: number; a: number }[] = [];
+for (let i = 0; i < 46; i++) {
+  const ang = i * 2.39996;
+  const d = 56 + ((i * 37) % 24);
+  grains.push({ x: 100 + Math.cos(ang) * d, y: 100 + Math.sin(ang) * d, a: (i * 53) % 180 });
+}
+// Garniture : un cœur au centre + des morceaux autour (une couleur par ingrédient)
+const morceaux = garniture.slice(1).flatMap((couleur, i) =>
+  [0, 1].map((k) => {
+    const ang = (i * 2 + k) * (Math.PI / garniture.length) + 0.6;
+    return { x: 100 + Math.cos(ang) * 34, y: 100 + Math.sin(ang) * 34, couleur, a: (ang * 180) / Math.PI };
+  }),
+);
+const pointsTopping: { x: number; y: number }[] = [];
+for (let i = 0; i < 26; i++) {
+  const ang = i * 2.39996;
+  const d = 30 + ((i * 29) % 46);
+  pointsTopping.push({ x: 100 + Math.cos(ang) * d, y: 100 + Math.sin(ang) * d });
+}
+---
+
+<svg class="roll" viewBox="0 0 200 200" width={taille} height={taille} aria-hidden="true" focusable="false">
+  <circle cx="100" cy="104" r="94" fill="#151515" opacity="0.12" />
+  <!-- algue nori -->
+  <circle cx="100" cy="100" r="94" fill="#1b2a20" />
+  <circle cx="100" cy="100" r="94" fill="none" stroke="#0e1712" stroke-width="3" />
+  <!-- riz -->
+  <circle cx="100" cy="100" r="84" fill="#f7f3ea" />
+  <g fill="#ffffff" stroke="#e4ddcd" stroke-width="0.8">
+    {grains.map((g) => <ellipse cx={g.x} cy={g.y} rx="6" ry="3" transform={`rotate(${g.a} ${g.x} ${g.y})`} />)}
+  </g>
+  <!-- garniture -->
+  {morceaux.map((m) => (
+    <rect x={m.x - 17} y={m.y - 9} width="34" height="18" rx="7" fill={m.couleur} transform={`rotate(${m.a} ${m.x} ${m.y})`} />
+  ))}
+  <circle cx="100" cy="100" r="32" fill={garniture[0]} />
+  <path d="M82 92 q18 -10 36 0" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.35" />
+  <!-- topping -->
+  {topping === 'tobiko' && pointsTopping.map((p) => <circle cx={p.x} cy={p.y} r="3.4" fill="#e63027" />)}
+  {topping === 'sesame' && pointsTopping.map((p, i) => (
+    <ellipse cx={p.x} cy={p.y} rx="3.4" ry="1.7" fill={i % 3 ? '#fffaf0' : '#151515'} transform={`rotate(${i * 41} ${p.x} ${p.y})`} />
+  ))}
+  {topping === 'oignon' && pointsTopping.filter((_, i) => i % 2 === 0).map((p, i) => (
+    <path d={`M${p.x - 5} ${p.y} q5 -5 10 0`} stroke="#c9873a" stroke-width="3" stroke-linecap="round" fill="none" transform={`rotate(${i * 37} ${p.x} ${p.y})`} />
+  ))}
+  {topping === 'piment' && pointsTopping.filter((_, i) => i % 2 === 0).map((p) => (
+    <circle cx={p.x} cy={p.y} r="3.6" fill="#d22d1f" stroke="#ffd9a8" stroke-width="1.2" />
+  ))}
+</svg>
+
+<style>
+  .roll {
+    width: 100%;
+    height: auto;
+  }
+</style>

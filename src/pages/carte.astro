@@ -1,0 +1,242 @@
+---
+// Page /carte : toute la carte, ingrédients et allergènes. Version imprimable (feuille de style print).
+import Base from '../layouts/Base.astro';
+import Roll from '../components/Roll.astro';
+import Logo from '../components/Logo.astro';
+import { rolls, ALLERGENES, TAGS, sansGluten, type Allergene } from '../data/menu';
+import { restaurant, horairesTexte, offreEtudiante } from '../config/restaurant';
+import { euros } from '../lib/format';
+
+// Seuls les allergènes présents dans la carte forment les colonnes du tableau
+const presents = (Object.keys(ALLERGENES) as Allergene[]).filter((a) => rolls.some((r) => r.allergenes.includes(a)));
+---
+
+<Base titre="La carte et les allergènes · TSUTSU Metz" description="Carte complète de TSUTSU : six rolls en tube de 8,90 € à 10,90 €, ingrédients et allergènes.">
+  <div class="page-carte conteneur">
+    <p class="tategaki tategaki--marge page-carte__ja ecran-seulement" lang="ja" aria-hidden="true">お品書き</p>
+    <div class="page-carte__tete">
+      <p class="imprime-seulement"><Logo /></p>
+      <h1>La <span class="rouge">carte.</span></h1>
+      <p class="chapo">Six rolls, un seul format : un long maki roulé minute dans son étui kraft. Tout est halal.</p>
+      <div class="page-carte__actions ecran-seulement">
+        <button class="bouton bouton--noir" type="button" data-imprimer>Imprimer la carte</button>
+        <button class="bouton" type="button" data-ouvrir-panier aria-haspopup="dialog">Commander <span class="fleche" aria-hidden="true">→</span></button>
+      </div>
+    </div>
+
+    <ul class="liste-rolls" role="list">
+      {rolls.map((r) => (
+        <li class="ligne-roll">
+          <div class="ligne-roll__visuel"><Roll roll={r} /></div>
+          <div class="ligne-roll__texte">
+            <h2 class="ligne-roll__nom">{r.nom} <span class="ja ligne-roll__ja" lang="ja">{r.nomJa}</span></h2>
+            <p>{r.description}</p>
+            <p class="discret"><strong>Ingrédients :</strong> {r.ingredients.join(', ')}.</p>
+            <p class="discret">
+              <strong>Allergènes :</strong> {r.allergenes.length ? r.allergenes.map((a) => ALLERGENES[a]).join(', ') : 'aucun des 14 allergènes réglementaires'}.
+            </p>
+            <p class="ligne-roll__tags">
+              {[...r.tags.map((t) => TAGS[t]), ...(sansGluten(r) ? ['Sans gluten'] : [])].join(' · ')}
+            </p>
+          </div>
+          <p class="ligne-roll__prix">{euros(r.prix)}</p>
+          <button class="bouton bouton--contour ligne-roll__ajouter ecran-seulement" type="button" data-ajouter={r.id}>
+            <span data-texte-bouton>+ Ajouter</span><span class="cache"> {r.nom} au panier</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+
+    <h2 class="titre-tableau">Tableau des allergènes</h2>
+    <div class="tableau-defile" tabindex="0" role="region" aria-label="Tableau des allergènes, défilable">
+      <table class="allergenes">
+        <thead>
+          <tr>
+            <th scope="col">Roll</th>
+            {presents.map((a) => <th scope="col">{ALLERGENES[a]}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {rolls.map((r) => (
+            <tr>
+              <th scope="row">{r.nom}</th>
+              {presents.map((a) => (
+                <td>{r.allergenes.includes(a) ? <><span aria-hidden="true">●</span><span class="cache">Contient</span></> : <span class="cache">Non</span>}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="discret note">
+      Nos rolls sont préparés dans une cuisine qui utilise les 14 allergènes réglementaires : des traces sont possibles.
+      Une question ? Appelez-nous au <a href={`tel:${restaurant.telephone.lien}`}>{restaurant.telephone.affichage}</a>.
+    </p>
+
+    <div class="infos-pied">
+      <p><strong>Offre étudiante · {euros(offreEtudiante.prix)}</strong> — {offreEtudiante.contenu}.</p>
+      <p>{restaurant.adresse.rue}, {restaurant.adresse.codePostal} {restaurant.adresse.ville} · {horairesTexte.map((h) => `${h.jours} ${h.heures}`).join(' · ')}</p>
+    </div>
+  </div>
+</Base>
+
+<script>
+  document.querySelector('[data-imprimer]')?.addEventListener('click', () => window.print());
+</script>
+
+<style>
+  .page-carte {
+    padding-top: calc(var(--header) + clamp(40px, 6vw, 80px));
+    padding-bottom: clamp(64px, 8vw, 120px);
+  }
+  .page-carte__tete {
+    display: grid;
+    gap: 20px;
+    margin-bottom: clamp(32px, 5vw, 64px);
+  }
+  .page-carte__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .liste-rolls {
+    border-top: 2px solid var(--noir);
+  }
+  .ligne-roll {
+    display: grid;
+    grid-template-columns: 110px 1fr auto auto;
+    gap: 24px;
+    align-items: center;
+    padding: 24px 0;
+    border-bottom: 1.5px solid var(--filet);
+  }
+  .ligne-roll__texte {
+    display: grid;
+    gap: 6px;
+  }
+  .ligne-roll__nom {
+    font-size: clamp(1.6rem, 1.2rem + 1.2vw, 2.4rem);
+  }
+  .page-carte__ja {
+    top: calc(var(--header) + clamp(40px, 6vw, 80px));
+  }
+  .ligne-roll__ja {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.5em;
+    color: var(--rouge-fonce);
+    text-transform: none;
+  }
+  .ligne-roll__tags {
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .ligne-roll__prix {
+    font-family: var(--titre);
+    font-size: 1.8rem;
+    white-space: nowrap;
+  }
+  .titre-tableau {
+    font-size: clamp(2rem, 1.4rem + 2vw, 3.2rem);
+    margin: clamp(56px, 8vw, 96px) 0 24px;
+  }
+  .tableau-defile {
+    overflow-x: auto;
+    border: 2px solid var(--noir);
+    border-radius: var(--rayon);
+    background: #fff;
+  }
+  .allergenes {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .allergenes th,
+  .allergenes td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--filet);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .allergenes thead th {
+    background: var(--noir);
+    color: var(--papier);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .allergenes tbody th {
+    text-align: left;
+    font-weight: 800;
+  }
+  .allergenes td {
+    color: var(--rouge-fonce);
+    font-size: 18px;
+  }
+  .note {
+    margin-top: 16px;
+    max-width: 70ch;
+  }
+  .infos-pied {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid var(--noir);
+    display: grid;
+    gap: 6px;
+  }
+  .imprime-seulement {
+    display: none;
+  }
+  @media (max-width: 639px) {
+    .ligne-roll {
+      grid-template-columns: 72px 1fr;
+      gap: 14px 18px;
+    }
+    .ligne-roll__prix {
+      grid-column: 2;
+    }
+    .ligne-roll__ajouter {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* ---------- Impression : une carte propre, sans en-tête ni boutons ---------- */
+  @media print {
+    :global(.entete),
+    :global(.pied),
+    :global(.panier),
+    .ecran-seulement {
+      display: none !important;
+    }
+    :global(body) {
+      background: #fff;
+      font-size: 11pt;
+    }
+    .page-carte {
+      padding: 0;
+    }
+    .imprime-seulement {
+      display: block;
+      font-size: 24pt;
+    }
+    .ligne-roll {
+      grid-template-columns: 70px 1fr auto;
+      padding: 10px 0;
+      break-inside: avoid;
+    }
+    .tableau-defile {
+      overflow: visible;
+      border-radius: 0;
+    }
+    .allergenes thead th {
+      background: #fff;
+      color: #000;
+      border-bottom: 2px solid #000;
+    }
+    a {
+      text-decoration: none;
+    }
+  }
+</style>

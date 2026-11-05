@@ -1,0 +1,193 @@
+---
+// LE TUBE : étui kraft cylindrique, rouleau de sushi dedans, haut garni (riz + tobiko).
+// Dessiné en SVG (dégradés pour le volume). Trois états pilotés par data-etat sur .tube :
+//   « etui »     → l'étui seul, légende « Étui kraft »
+//   « rouleau »  → le rouleau sort de l'étui
+//   « enrobage » → zoom sur le haut garni, légendes des ingrédients
+// L'état est changé par src/scripts/tube.ts quand on fait défiler la section « Un tube ».
+interface Props {
+  id?: string;
+  etat?: 'etui' | 'rouleau' | 'enrobage' | 'repos';
+}
+const { id, etat = 'repos' } = Astro.props;
+const u = id ?? 'tube'; // préfixe unique des dégradés (plusieurs tubes possibles sur la page)
+
+// Points de tobiko (œufs de poisson volant) répartis sur le dessus, calculés une fois
+const tobiko: { x: number; y: number; r: number }[] = [];
+for (let i = 0; i < 70; i++) {
+  const a = i * 2.39996; // angle d'or : répartition régulière
+  const d = Math.sqrt((i + 0.5) / 70);
+  tobiko.push({ x: 150 + Math.cos(a) * d * 70, y: 150 + Math.sin(a) * d * 18, r: 3.2 + ((i * 7) % 5) * 0.35 });
+}
+const sesame = [
+  [118, 146, -20], [132, 157, 30], [171, 143, 60], [183, 155, -40], [150, 162, 10], [104, 155, 70], [196, 148, -10],
+];
+---
+
+<div class="tube" id={id} data-etat={etat} aria-hidden="true">
+  <svg viewBox="0 0 300 600" class="tube__svg" role="presentation">
+    <defs>
+      <linearGradient id={`${u}-kraft`} x1="0" x2="1">
+        <stop offset="0" stop-color="#8e6a48" />
+        <stop offset="0.18" stop-color="#b48d68" />
+        <stop offset="0.45" stop-color="#d9b892" />
+        <stop offset="0.62" stop-color="#c9a27e" />
+        <stop offset="1" stop-color="#7f5d3e" />
+      </linearGradient>
+      <linearGradient id={`${u}-nori`} x1="0" x2="1">
+        <stop offset="0" stop-color="#0f1a14" />
+        <stop offset="0.45" stop-color="#2b3a2f" />
+        <stop offset="1" stop-color="#0b120e" />
+      </linearGradient>
+      <radialGradient id={`${u}-riz`} cx="0.45" cy="0.4" r="0.7">
+        <stop offset="0" stop-color="#ffffff" />
+        <stop offset="1" stop-color="#e9e3d6" />
+      </radialGradient>
+      <linearGradient id={`${u}-bande`} x1="0" x2="1">
+        <stop offset="0" stop-color="#a51d16" />
+        <stop offset="0.45" stop-color="#e63027" />
+        <stop offset="1" stop-color="#9a1a13" />
+      </linearGradient>
+      <pattern id={`${u}-fibres`} width="7" height="40" patternUnits="userSpaceOnUse">
+        <path d="M2 0v40M5 10v18" stroke="#6b4a2c" stroke-width="0.6" opacity="0.18" />
+      </pattern>
+      <clipPath id={`${u}-corps`}>
+        <path d="M60 170 V520 A90 26 0 0 0 240 520 V170 Z" />
+      </clipPath>
+    </defs>
+
+    <!-- ombre au sol -->
+    <ellipse class="tube__ombre" cx="150" cy="548" rx="118" ry="20" fill="#151515" opacity="0.16" />
+
+    <!-- intérieur de l'étui (bord arrière de l'ouverture) -->
+    <ellipse cx="150" cy="170" rx="90" ry="26" fill="#6e5036" />
+
+    <!-- le rouleau : glisse vers le haut dans l'état « rouleau » -->
+    <g class="tube__rouleau">
+      <rect x="66" y="150" width="168" height="300" fill={`url(#${u}-nori)`} />
+      <ellipse cx="150" cy="150" rx="84" ry="24" fill="#0f1a14" />
+      <ellipse cx="150" cy="150" rx="77" ry="20.5" fill={`url(#${u}-riz)`} />
+      <!-- garniture visible au centre -->
+      <ellipse cx="150" cy="151" rx="26" ry="7.5" fill="#f2845c" />
+      <ellipse cx="166" cy="152" rx="12" ry="4" fill="#8db255" />
+      <!-- tobiko rouge en petits points -->
+      <g class="tube__tobiko">
+        {tobiko.map((p) => <circle cx={p.x} cy={p.y} r={p.r} fill="#e63027" />)}
+        {tobiko.filter((_, i) => i % 3 === 0).map((p) => <circle cx={p.x - 0.9} cy={p.y - 1} r={0.9} fill="#ff9c8f" />)}
+      </g>
+      <g fill="#fff8e8">
+        {sesame.map(([x, y, a]) => <ellipse cx={x} cy={y} rx="3.2" ry="1.6" transform={`rotate(${a} ${x} ${y})`} />)}
+      </g>
+    </g>
+
+    <!-- étui kraft (face avant) -->
+    <g class="tube__etui">
+      <path d="M60 170 V520 A90 26 0 0 0 240 520 V170 A90 26 0 0 1 60 170 Z" fill={`url(#${u}-kraft)`} />
+      <rect x="60" y="150" width="180" height="400" fill={`url(#${u}-fibres)`} clip-path={`url(#${u}-corps)`} />
+      <!-- bord roulé de l'ouverture -->
+      <path d="M60 170 A90 26 0 0 0 240 170" fill="none" stroke="#e7cba6" stroke-width="5" stroke-linecap="round" />
+      <!-- bande rouge avec la marque -->
+      <g clip-path={`url(#${u}-corps)`}>
+        <path d="M60 300 A90 26 0 0 0 240 300 V378 A90 26 0 0 1 60 378 Z" fill={`url(#${u}-bande)`} />
+      </g>
+      <text x="150" y="352" text-anchor="middle" class="tube__marque">TSUTSU</text>
+      <text x="150" y="430" text-anchor="middle" class="tube__kanji" lang="ja">筒</text>
+      <!-- reflet vertical -->
+      <rect x="132" y="185" width="14" height="330" rx="7" fill="#fff" opacity="0.16" clip-path={`url(#${u}-corps)`} />
+    </g>
+
+    <!-- légendes (états « etui » et « enrobage ») -->
+    <g class="tube__legende tube__legende--etui">
+      <path d="M244 250 H276" stroke="#151515" stroke-width="2" />
+      <circle cx="244" cy="250" r="4" fill="#151515" />
+      <text x="282" y="255" class="tube__legende-texte">Étui kraft</text>
+    </g>
+    <g class="tube__legende tube__legende--enrobage">
+      <path d="M200 142 L236 112 H262" stroke="#151515" stroke-width="1.6" fill="none" />
+      <circle cx="200" cy="142" r="3" fill="#151515" />
+      <text x="266" y="116" class="tube__legende-texte tube__legende-texte--petit">Tobiko</text>
+      <path d="M104 158 L70 184 H44" stroke="#151515" stroke-width="1.6" fill="none" />
+      <circle cx="104" cy="158" r="3" fill="#151515" />
+      <text x="40" y="188" text-anchor="end" class="tube__legende-texte tube__legende-texte--petit">Riz vinaigré</text>
+    </g>
+  </svg>
+
+</div>
+
+<style>
+  .tube {
+    position: relative;
+    width: min(100%, 360px);
+    aspect-ratio: 300 / 600;
+    margin-inline: auto;
+    rotate: var(--tube-rotation, 0deg);
+    translate: 0 var(--tube-decalage, 0px);
+  }
+  .tube__svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .tube__marque {
+    font-family: var(--titre);
+    font-size: 34px;
+    fill: #fff;
+    letter-spacing: 1px;
+  }
+  .tube__kanji {
+    font-family: var(--kanji);
+    font-weight: 800;
+    font-size: 54px;
+    fill: #151515;
+    opacity: 0.85;
+  }
+
+  /* Transitions entre états */
+  .tube__rouleau,
+  .tube__etui,
+  .tube__svg {
+    transition: transform 900ms var(--ease);
+    transform-box: view-box;
+    transform-origin: 150px 150px;
+  }
+  .tube__legende {
+    opacity: 0;
+    transition: opacity 500ms var(--ease);
+  }
+  .tube[data-etat='rouleau'] .tube__rouleau {
+    transform: translateY(-120px);
+  }
+  .tube[data-etat='enrobage'] .tube__svg {
+    transform: scale(1.18) translateY(22px);
+  }
+  .tube[data-etat='etui'] .tube__legende--etui,
+  .tube[data-etat='enrobage'] .tube__legende--enrobage {
+    opacity: 1;
+    transition-delay: 300ms;
+  }
+
+  .tube__legende-texte {
+    font-family: var(--texte);
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    fill: #151515;
+  }
+  .tube__legende-texte--petit {
+    font-size: 13px; /* le dessin est agrandi dans cet état : le texte s'affiche à ~15 px */
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tube {
+      rotate: 0deg;
+      translate: none;
+    }
+    .tube__rouleau,
+    .tube__etui,
+    .tube__svg,
+    .tube__legende {
+      transition: none;
+    }
+  }
+</style>
