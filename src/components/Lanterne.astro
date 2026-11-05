@@ -1,0 +1,73 @@
+---
+// Lanterne de papier (chōchin) qui éclaire le comptoir. Illustration originale en SVG.
+// Le halo est un dégradé radial ; le léger balancement est coupé si « réduire les animations ».
+interface Props {
+  class?: string;
+  id?: string;
+}
+const { class: classe, id = 'lanterne' } = Astro.props;
+---
+
+<svg class:list={['lanterne', classe]} viewBox="0 0 120 220" aria-hidden="true" focusable="false">
+  <defs>
+    <radialGradient id={`${id}-halo`} cx="0.5" cy="0.55" r="0.5">
+      <stop offset="0" stop-color="#f0a23b" stop-opacity="0.55" />
+      <stop offset="1" stop-color="#f0a23b" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id={`${id}-papier`} cx="0.45" cy="0.45" r="0.6">
+      <stop offset="0" stop-color="#ffe2a8" />
+      <stop offset="0.45" stop-color="#f0a23b" />
+      <stop offset="1" stop-color="#c4542b" />
+    </radialGradient>
+  </defs>
+  <circle class="lanterne__halo" cx="60" cy="122" r="60" fill={`url(#${id}-halo)`} />
+  <g class="lanterne__corps">
+    <line x1="60" y1="0" x2="60" y2="40" stroke="#5b5348" stroke-width="2" />
+    <rect x="40" y="38" width="40" height="12" rx="2" fill="#1a1a1a" />
+    <path d="M42 50 C 8 70, 8 170, 42 190 L 78 190 C 112 170, 112 70, 78 50 Z" fill={`url(#${id}-papier)`} />
+    <g stroke="#9c3f1f" stroke-width="1.4" fill="none" opacity="0.55">
+      <path d="M30 70 Q 60 76 90 70" />
+      <path d="M22 92 Q 60 99 98 92" />
+      <path d="M19 120 Q 60 127 101 120" />
+      <path d="M22 148 Q 60 155 98 148" />
+      <path d="M30 172 Q 60 178 90 172" />
+    </g>
+    <rect x="40" y="188" width="40" height="12" rx="2" fill="#1a1a1a" />
+    <line x1="60" y1="200" x2="60" y2="218" stroke="#d9482b" stroke-width="3" stroke-linecap="round" />
+  </g>
+</svg>
+
+<style>
+  .lanterne {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .lanterne__corps {
+    transform-origin: 60px 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .lanterne__corps {
+      animation: balance 7s ease-in-out infinite alternate;
+    }
+    .lanterne__halo {
+      animation: lueur 4.5s ease-in-out infinite alternate;
+    }
+  }
+  @keyframes balance {
+    from {
+      transform: rotate(-1.6deg);
+    }
+    to {
+      transform: rotate(1.6deg);
+    }
+  }
+  @keyframes lueur {
+    from {
+      opacity: 0.75;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>

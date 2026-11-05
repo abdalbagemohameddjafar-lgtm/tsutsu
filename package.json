@@ -11,11 +11,9 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
-    "@fontsource-variable/inter": "^5.3.0",
-    "@fontsource/archivo-black": "^5.3.0",
+    "@fontsource/dm-mono": "^5.3.0",
+    "@fontsource/shippori-mincho-b1": "^5.3.0",
+    "@fontsource/zen-kaku-gothic-new": "^5.3.1",
     "astro": "^7.4.5"
-  },
-  "devDependencies": {
-    "@fontsource/dela-gothic-one": "^5.3.0"
   }
 }

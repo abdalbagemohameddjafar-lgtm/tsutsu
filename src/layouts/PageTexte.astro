@@ -23,11 +23,15 @@ const { titre, h1, description, noindex } = Astro.props;
     padding-bottom: clamp(64px, 8vw, 120px);
   }
   .page-texte h1 {
-    font-size: clamp(2.6rem, 1rem + 6vw, 6rem);
+    font-size: clamp(2.4rem, 1rem + 4.5vw, 4.8rem);
     margin-bottom: 40px;
   }
   .page-texte__corps {
     max-width: 72ch;
+    color: var(--texte-2);
+  }
+  .page-texte__corps :global(h2) {
+    color: var(--papier);
   }
   .page-texte__corps :global(h2) {
     font-size: clamp(1.4rem, 1.1rem + 1vw, 2rem);
@@ -37,15 +41,19 @@ const { titre, h1, description, noindex } = Astro.props;
     margin-top: 10px;
   }
   .page-texte__corps :global(a) {
-    color: var(--rouge-fonce);
+    color: var(--lanterne);
     font-weight: 600;
+    text-underline-offset: 4px;
+    display: inline-block;
+    padding-block: 10px;
+    margin-block: -10px;
   }
   .page-texte__corps :global(.avertissement) {
     padding: 14px 16px;
-    border: 2px solid var(--noir);
+    border: 1px solid var(--lanterne);
     border-radius: 10px;
-    background: var(--kraft);
-    font-weight: 700;
+    background: rgba(240, 162, 59, 0.08);
+    font-weight: 500;
     margin-bottom: 24px;
   }
 </style>

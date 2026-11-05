@@ -1,5 +1,5 @@
 ---
-// En-tête fixe : logo, liens, statut ouvert/fermé en temps réel, bouton « Commander » (ouvre le panier).
+// En-tête fixe : logo, liens, petit statut ouvert/fermé en temps réel, bouton « Commander » (ouvre le panier).
 import Logo from './Logo.astro';
 interface Props {
   accueil?: boolean;
@@ -7,10 +7,10 @@ interface Props {
 const { accueil = false } = Astro.props;
 const base = accueil ? '' : '/';
 const liens = [
-  { href: `${base}#tube`, texte: 'Le Tube' },
-  { href: `${base}#carte`, texte: 'La Carte' },
-  { href: `${base}#ingredients`, texte: 'Ingrédients' },
-  { href: `${base}#maison`, texte: 'La Maison' },
+  { href: `${base}#carte`, texte: 'La carte' },
+  { href: `${base}#comptoir`, texte: 'Le comptoir' },
+  { href: `${base}#reserver`, texte: 'Réserver' },
+  { href: `${base}#infos`, texte: 'Infos' },
 ];
 ---
 
@@ -23,10 +23,10 @@ const liens = [
     </nav>
 
     <p class="statut" data-statut role="status" aria-live="polite">
-      <span class="statut__ja" data-statut-ja aria-hidden="true">営業時間</span><span data-statut-texte>Horaires : 11h – 22h</span>
+      <span class="statut__point" aria-hidden="true"></span><span data-statut-texte>11h – 22h</span>
     </p>
 
-    <button class="bouton entete__commander" type="button" data-ouvrir-panier aria-haspopup="dialog">
+    <button class="bouton bouton--petit entete__commander" type="button" data-ouvrir-panier aria-haspopup="dialog">
       Commander
       <span class="entete__compte" data-compte-panier hidden>0</span>
       <span class="cache" data-compte-panier-texte></span>
@@ -49,8 +49,6 @@ const liens = [
       b.dataset.ouvert = String(s.ouvert);
       const t = b.querySelector('[data-statut-texte]');
       if (t) t.textContent = s.texte;
-      const ja = b.querySelector('[data-statut-ja]');
-      if (ja) ja.textContent = s.ja;
     });
   }
   majStatut();
@@ -81,71 +79,66 @@ const liens = [
     inset: 0 0 auto;
     z-index: 40;
     height: var(--header);
-    background: rgb(244 242 238 / 0.94);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1.5px solid var(--noir);
+    background: rgba(18, 22, 31, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--ligne);
   }
   .entete__barre {
     height: 100%;
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 28px;
   }
   .entete__logo {
-    font-size: 26px;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 21px;
     text-decoration: none;
     margin-right: auto;
   }
   .entete__nav {
     display: flex;
-    gap: 26px;
+    gap: 6px;
   }
   .entete__nav a {
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 12px;
+    font-weight: 500;
+    font-size: 15px;
     text-decoration: none;
-    padding-block: 6px;
-    background: linear-gradient(var(--rouge), var(--rouge)) 0 100% / 0 2px no-repeat;
-    transition: background-size 300ms var(--ease);
+    color: var(--texte-2);
+    transition: color 200ms ease;
   }
   .entete__nav a:hover {
-    background-size: 100% 2px;
+    color: var(--papier);
   }
 
-  /* Statut ouvert / fermé */
+  /* Statut ouvert / fermé : petit point qui s'allume */
   .statut {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    font-family: var(--mono);
     font-size: 13px;
-    font-weight: 700;
+    color: var(--texte-2);
     white-space: nowrap;
   }
-  /* Petite enseigne façon panneau japonais : 営業中 (ouvert) en rouge, 準備中 (fermé) en noir */
-  .statut__ja {
-    padding: 3px 6px;
-    border-radius: 3px;
-    background: var(--gris);
-    color: #fff;
-    font-family: var(--kanji);
-    font-weight: 700;
-    font-size: 12px;
-    letter-spacing: 0.06em;
+  .statut__point {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--texte-2);
   }
-  .statut[data-ouvert='true'] .statut__ja {
-    background: var(--rouge-fonce);
-  }
-  .statut[data-ouvert='false'] .statut__ja {
-    background: var(--noir);
+  .statut[data-ouvert='true'] .statut__point {
+    background: var(--lanterne);
+    box-shadow: 0 0 0 4px rgba(240, 162, 59, 0.2);
   }
 
   .entete__commander {
-    min-height: 44px;
-    padding: 0 20px;
-    font-size: 14px;
     position: relative;
   }
   .entete__compte {
@@ -155,8 +148,9 @@ const liens = [
     height: 22px;
     padding: 0 6px;
     border-radius: 999px;
-    background: #fff;
-    color: var(--noir);
+    background: var(--encre);
+    color: var(--lanterne);
+    font-family: var(--mono);
     font-size: 12px;
   }
 
@@ -170,17 +164,17 @@ const liens = [
   }
   .entete__burger span {
     display: block;
-    width: 24px;
-    height: 2.5px;
+    width: 22px;
+    height: 2px;
     margin: 5px auto;
-    background: var(--noir);
+    background: var(--papier);
     transition: transform 250ms var(--ease);
   }
   :global(.menu-ouvert) .entete__burger span:first-child {
-    transform: translateY(3.75px) rotate(45deg);
+    transform: translateY(3.5px) rotate(45deg);
   }
   :global(.menu-ouvert) .entete__burger span:last-child {
-    transform: translateY(-3.75px) rotate(-45deg);
+    transform: translateY(-3.5px) rotate(-45deg);
   }
 
   @media (max-width: 1023px) {
@@ -197,16 +191,16 @@ const liens = [
       position: fixed;
       inset: var(--header) 0 0;
       padding: 16px var(--marge) 40px;
-      background: var(--papier);
+      background: var(--encre);
       overflow-y: auto;
     }
     :global(.menu-ouvert) .entete__nav a {
       font-family: var(--titre);
-      font-size: clamp(2.2rem, 10vw, 3.4rem);
-      line-height: 1;
-      padding: 18px 0;
-      border-bottom: 1.5px solid var(--noir);
-      background: none;
+      font-weight: 800;
+      font-size: clamp(2rem, 9vw, 3rem);
+      color: var(--papier);
+      padding: 16px 0;
+      border-bottom: 1px solid var(--ligne);
     }
     :global(.menu-ouvert) body {
       overflow: hidden;
@@ -217,7 +211,7 @@ const liens = [
       display: none;
     }
     .entete__barre {
-      gap: 12px;
+      gap: 10px;
     }
   }
 </style>

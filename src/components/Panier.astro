@@ -29,7 +29,7 @@ const catalogue = rolls.map((r) => ({ id: r.id, nom: r.nom, prix: r.prix }));
   <!-- Panier vide -->
   <div class="panier__vide" data-panier-vide>
     <p>Votre panier est vide.</p>
-    <a class="bouton bouton--noir" href="/#carte" data-fermer-panier>Voir la carte</a>
+    <a class="bouton" href="/#carte" data-fermer-panier>Voir la carte</a>
   </div>
 
   <!-- Contenu -->
@@ -83,14 +83,14 @@ const catalogue = rolls.map((r) => ({ id: r.id, nom: r.nom, prix: r.prix }));
     margin: 0;
     padding: 0 0 32px;
     border: 0;
-    border-left: 2px solid var(--noir);
-    background: var(--papier);
-    color: var(--noir);
+    border-left: 1px solid var(--ligne-forte);
+    background: var(--surface);
+    color: var(--papier);
     overflow-y: auto;
     overscroll-behavior: contain;
   }
   .panier::backdrop {
-    background: rgb(21 21 21 / 0.55);
+    background: rgba(8, 10, 14, 0.72);
   }
   @media (prefers-reduced-motion: no-preference) {
     .panier[open] {
@@ -125,11 +125,12 @@ const catalogue = rolls.map((r) => ({ id: r.id, nom: r.nom, prix: r.prix }));
     align-items: center;
     justify-content: space-between;
     padding: 18px 24px;
-    background: var(--noir);
+    background: var(--encre);
     color: var(--papier);
+    border-bottom: 1px solid var(--ligne);
   }
   .panier__titre {
-    font-size: 30px;
+    font-size: 28px;
     line-height: 1;
   }
   .panier__fermer {
@@ -144,12 +145,14 @@ const catalogue = rolls.map((r) => ({ id: r.id, nom: r.nom, prix: r.prix }));
     cursor: pointer;
   }
   .panier__fermer:hover {
-    background: rgb(255 255 255 / 0.12);
+    background: var(--surface-2);
   }
   .panier__info {
     padding: 12px 24px;
-    background: var(--kraft);
-    font-weight: 700;
+    background: var(--surface-2);
+    color: var(--lanterne);
+    font-family: var(--mono);
+    font-weight: 500;
     font-size: 14px;
   }
   .panier__vide {
@@ -167,26 +170,27 @@ const catalogue = rolls.map((r) => ({ id: r.id, nom: r.nom, prix: r.prix }));
     gap: 6px 16px;
     align-items: center;
     padding: 16px 0;
-    border-bottom: 1.5px solid var(--filet);
+    border-bottom: 1px solid var(--ligne);
   }
   .panier__liste :global(.ligne-nom) {
     font-weight: 800;
   }
   .panier__liste :global(.ligne-prix) {
-    font-weight: 700;
+    font-family: var(--mono);
+    font-weight: 500;
     white-space: nowrap;
   }
   .panier__liste :global(.quantite) {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    border: 1.5px solid var(--noir);
+    border: 1px solid var(--ligne-forte);
     border-radius: 999px;
     width: fit-content;
   }
   .panier__liste :global(.quantite button) {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border: 0;
     border-radius: 50%;
     background: none;
@@ -195,7 +199,7 @@ const catalogue = rolls.map((r) => ({ id: r.id, nom: r.nom, prix: r.prix }));
     cursor: pointer;
   }
   .panier__liste :global(.quantite button:hover) {
-    background: rgb(21 21 21 / 0.08);
+    background: var(--surface-2);
   }
   .panier__liste :global(.quantite output) {
     min-width: 22px;
@@ -210,9 +214,10 @@ const catalogue = rolls.map((r) => ({ id: r.id, nom: r.nom, prix: r.prix }));
     font-size: 18px;
   }
   .panier__total strong {
-    font-family: var(--titre);
-    font-weight: 400;
-    font-size: 30px;
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 28px;
+    color: var(--lanterne);
   }
   .panier__form {
     display: grid;
@@ -231,6 +236,7 @@ const catalogue = rolls.map((r) => ({ id: r.id, nom: r.nom, prix: r.prix }));
     border: 0;
     background: none;
     padding: 8px;
+    min-height: 44px;
     cursor: pointer;
     font-size: 15px;
   }
@@ -240,8 +246,8 @@ const catalogue = rolls.map((r) => ({ id: r.id, nom: r.nom, prix: r.prix }));
   .panier__retour {
     padding: 12px 14px;
     border-radius: 10px;
-    background: #fff;
-    border: 1.5px solid var(--noir);
-    font-weight: 600;
+    background: rgba(240, 162, 59, 0.08);
+    border: 1px solid var(--lanterne);
+    font-weight: 500;
   }
 </style>

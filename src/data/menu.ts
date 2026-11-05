@@ -1,5 +1,5 @@
 // =====================================================================
-// LA CARTE — modifiez ici les rolls : nom, description, prix, ingrédients,
+// LA CARTE — modifiez ici les temaki : nom, description, prix, ingrédients,
 // allergènes, tags et couleurs de l'illustration.
 // Le site (section « La carte », page /carte, panier, données Google) se met
 // à jour automatiquement.
@@ -30,12 +30,6 @@ export const TAGS: Record<Tag, string> = {
   epice: 'Épicé',
   bestseller: 'Best-seller',
 };
-/** Équivalent japonais des étiquettes : 菜食 (saishoku, végétarien), 辛 (kara, épicé), 人気 (ninki, populaire). */
-export const TAGS_JA: Record<Tag, string> = {
-  vege: '菜食',
-  epice: '辛',
-  bestseller: '人気',
-};
 
 export type Roll = {
   id: string; // identifiant unique, sans espace (sert au panier)
@@ -46,7 +40,10 @@ export type Roll = {
   ingredients: string[];
   allergenes: Allergene[];
   tags: Tag[];
-  /** Illustration (coupe de maki vue de dessus) : couleurs de la garniture, du centre vers l'extérieur */
+  /** Photo réelle (facultative) : fichier dans public/photos/, ex. '/photos/saumon-avocat.jpg'. Sans photo, l'illustration s'affiche. */
+  photo?: string;
+  photoWebp?: string;
+  /** Illustration (temaki vu de côté) : couleurs de la garniture qui dépasse du cône, de la plus visible à la moins visible */
   visuel: {
     garniture: string[];
     topping?: 'tobiko' | 'sesame' | 'oignon' | 'piment';
@@ -122,16 +119,15 @@ export const rolls: Roll[] = [
   },
 ];
 
-/** Un roll est « sans gluten » si le gluten ne figure pas dans ses allergènes. */
+/** Une recette est « sans gluten » si le gluten ne figure pas dans ses allergènes. */
 export const sansGluten = (r: Roll) => !r.allergenes.includes('gluten');
 
-// Ingrédients mis en avant (section « Ce qu'on roule dedans »)
-// ja : nom japonais (sumeshi = riz vinaigré, nori, saumon, avocat, goma = sésame, kyūri = concombre)
+// Ingrédients mis en avant (section « Ce qu'il y a dans le cône »)
 export const ingredientsVedettes = [
-  { id: 'riz', nom: 'Riz vinaigré', ja: '酢飯', texte: 'Riz japonais cuit chaque matin, assaisonné au vinaigre de riz.' },
-  { id: 'nori', nom: 'Nori', ja: '海苔', texte: 'Feuille d’algue grillée, posée au dernier moment pour rester croquante.' },
-  { id: 'saumon', nom: 'Saumon', ja: 'サーモン', texte: 'Saumon frais tranché à la commande, jamais à l’avance.' },
-  { id: 'avocat', nom: 'Avocat', ja: 'アボカド', texte: 'Avocat mûr à point, coupé en lamelles fondantes.' },
-  { id: 'sesame', nom: 'Sésame', ja: '胡麻', texte: 'Graines blanches et noires torréfiées pour le croquant.' },
-  { id: 'concombre', nom: 'Concombre', ja: 'きゅうり', texte: 'Bâtonnets bien frais pour la touche qui croque.' },
+  { id: 'riz', nom: 'Riz vinaigré', texte: 'Riz japonais cuit plusieurs fois par service, assaisonné au vinaigre de riz et servi encore tiède.' },
+  { id: 'nori', nom: 'Nori', texte: 'Feuille d’algue grillée, roulée au dernier moment : c’est elle qui fait le croquant.' },
+  { id: 'saumon', nom: 'Saumon', texte: 'Saumon frais tranché à la commande, jamais à l’avance.' },
+  { id: 'avocat', nom: 'Avocat', texte: 'Avocat mûr à point, coupé en lamelles fondantes.' },
+  { id: 'sesame', nom: 'Sésame', texte: 'Graines blanches et noires torréfiées pour le croquant.' },
+  { id: 'concombre', nom: 'Concombre', texte: 'Bâtonnets bien frais pour la touche qui croque.' },
 ] as const;

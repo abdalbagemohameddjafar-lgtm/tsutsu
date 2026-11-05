@@ -1,342 +1,306 @@
 ---
-// Page d'accueil TSUTSU — sections dans l'ordre du brief.
+// Page d'accueil TSUTSU — comptoir à temaki, ambiance izakaya du soir.
 import Base from '../layouts/Base.astro';
-import Tube from '../components/Tube.astro';
 import Carte from '../components/Carte.astro';
-import IngredientIcone from '../components/IngredientIcone.astro';
 import Reservation from '../components/Reservation.astro';
-import Enso from '../components/Enso.astro';
+import Infos from '../components/Infos.astro';
+import Photo from '../components/Photo.astro';
+import Lanterne from '../components/Lanterne.astro';
+import Temaki from '../components/Temaki.astro';
 import { restaurant, offreEtudiante } from '../config/restaurant';
-import { ingredientsVedettes } from '../data/menu';
+import { rolls, ingredientsVedettes } from '../data/menu';
 import { euros } from '../lib/format';
 
-// Bande défilante : français + japonais (ハラール halal · 作りたて fait minute ·
-// いらっしゃいませ bienvenue · 持ち帰り à emporter)
-const mots = ['100 % halal', 'Roulé minute', `${restaurant.adresse.rue}, ${restaurant.adresse.ville}`, 'Click & collect'];
-const motsBande = [
-  { t: '100 % halal' }, { t: 'ハラール', ja: true },
-  { t: 'Roulé minute' }, { t: '作りたて', ja: true },
-  { t: `${restaurant.adresse.rue}, ${restaurant.adresse.ville}` }, { t: 'いらっしゃいませ', ja: true },
-  { t: 'Click & collect' }, { t: '持ち帰り', ja: true },
-];
-
-const etapes = [
-  {
-    id: 'etui',
-    num: '01',
-    kanji: '一',
-    ja: '紙筒',
-    titre: 'L’étui kraft',
-    texte: 'Un tube en carton kraft recyclable qui tient le rouleau bien droit. Il se tient d’une main, se glisse dans un sac et ne laisse rien couler.',
-  },
-  {
-    id: 'rouleau',
-    num: '02',
-    kanji: '二',
-    ja: '巻き',
-    titre: 'Le rouleau',
-    texte: 'Riz vinaigré, nori croquante et garniture généreuse, roulés minute en un seul long maki. On pousse par le fond, il sort au fur et à mesure.',
-  },
-  {
-    id: 'enrobage',
-    num: '03',
-    kanji: '三',
-    ja: '仕上げ',
-    titre: 'L’enrobage',
-    texte: 'Le haut est garni de tobiko, de sésame ou d’oignons frits selon le roll : la première bouchée croque autant que la dernière.',
-  },
-];
+// Bandeau défilant (français uniquement)
+const motsBande = ['Roulé à la main', '100 % halal', 'Nori grillée', 'Riz encore tiède', 'Sur place ou à emporter', `${restaurant.adresse.ville}`];
+const [classique, spicy, mango] = [rolls[0], rolls[1], rolls[2]];
 ---
 
 <Base accueil>
-  <div class="zone-tube" data-zone-tube id="top">
-    <!-- Le tube collant (ordinateur) : reste à droite pendant la bannière et la section « Un tube » -->
-    <div class="zone-tube__piste" aria-hidden="true">
-      <div class="zone-tube__collant">
-        <div class="zone-tube__enso"><Enso /></div>
-        <!-- 片手で食べる寿司 : « le sushi qui se mange d'une main » -->
-        <p class="tategaki zone-tube__phrase" lang="ja">片手で食べる寿司</p>
-        <Tube id="tube-collant" />
-      </div>
+  <!-- Hero : comptoir la nuit, sous le noren et les lanternes -->
+  <section class="hero" id="top" aria-labelledby="hero-titre">
+    <div class="hero__fond">
+      <!-- Photo du hero : passez src="/photos/hero.jpg" (et webp) pour remplacer l'illustration -->
+      <Photo class="hero__photo" alt="Le comptoir de TSUTSU le soir, sous le rideau d’entrée et les lanternes allumées" prioritaire>
+        <div class="scene" aria-hidden="true">
+          <div class="scene__noren">
+            <span></span><span></span><span><b lang="ja">筒</b></span><span></span><span></span>
+          </div>
+          <div class="scene__lanterne scene__lanterne--g"><Lanterne id="lanterne-g" /></div>
+          <div class="scene__lanterne scene__lanterne--d"><Lanterne id="lanterne-d" /></div>
+          <div class="scene__comptoir">
+            <div class="scene__temaki scene__temaki--1"><Temaki roll={classique} /></div>
+            <div class="scene__temaki scene__temaki--2"><Temaki roll={spicy} /></div>
+            <div class="scene__temaki scene__temaki--3"><Temaki roll={mango} /></div>
+          </div>
+        </div>
+      </Photo>
     </div>
 
-    <!-- 2. Bannière -->
-    <section class="hero" aria-labelledby="hero-titre">
-      <div class="conteneur hero__contenu">
-        <ul class="hero__etiquettes" role="list">
-          <li class="etiquette">Roulé minute</li>
-          <li class="etiquette">100 % halal</li>
-          <!-- Statut : sur sa propre ligne, pour que la mise à jour du texte ne décale rien -->
-          <li class="hero__statut-ligne"><span class="etiquette hero__statut" data-statut><span class="hero__ja" data-statut-ja aria-hidden="true">営業時間</span><span data-statut-texte>Ouvert tous les jours · 11h – 22h</span></span></li>
-        </ul>
-        <h1 id="hero-titre">Le sushi qui tient <span class="rouge">dans la main</span></h1>
-        <!-- Tube sous le titre sur mobile et tablette -->
-        <div class="hero__tube-mobile">
-          <div class="hero__enso"><Enso /></div>
-          <p class="tategaki hero__phrase" lang="ja" aria-hidden="true">片手で食べる寿司</p>
-          <Tube id="tube-mobile" />
-        </div>
-        <p class="chapo hero__texte">
-          Un long maki roulé minute, glissé dans un étui kraft. Sans baguettes, sans dégâts, à manger en marchant.
-          Six recettes, de {euros(8.9)} à {euros(10.9)}.
+    <div class="conteneur hero__contenu">
+      <p class="surtitre">Comptoir à temaki · {restaurant.adresse.ville}</p>
+      <h1 id="hero-titre">Roulé à la main. <span class="accent">Mangé dans la minute.</span></h1>
+      <p class="chapo hero__texte">
+        Une feuille de nori grillée, du riz encore tiède, une garniture généreuse : chaque temaki est roulé devant vous
+        et se mange tout de suite, tant que l’algue croque.
+      </p>
+      <div class="hero__actions">
+        <a class="bouton" href="#carte">Voir la carte</a>
+        <a class="bouton bouton--contour" href="#reserver">Réserver au comptoir</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bandeau défilant -->
+  <div class="bande" role="img" aria-label={motsBande.join(', ')}>
+    <div class="bande__piste">
+      {[0, 1].map(() => (
+        <p class="bande__texte" aria-hidden="true">
+          {motsBande.map((m) => <><span>{m}</span><span class="bande__sep">•</span></>)}
         </p>
-        <div class="hero__actions">
-          <button class="bouton" type="button" data-ouvrir-panier aria-haspopup="dialog">Commander <span class="fleche" aria-hidden="true">→</span></button>
-          <a class="lien" href="#tube">Découvrir le tube</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. Bande défilante -->
-    <div class="bande-cadre">
-    <div class="bande" role="img" aria-label={mots.join(', ')}>
-      <div class="bande__piste">
-        {[0, 1].map((n) => (
-          <p class="bande__texte" aria-hidden="true">
-            {motsBande.map((m) => <><span class:list={{ 'ja bande__ja': m.ja }} lang={m.ja ? 'ja' : undefined}>{m.t}</span><span class="bande__etoile">✦</span></>)}
-          </p>
-        ))}
-      </div>
+      ))}
     </div>
-    </div>
-
-    <!-- 4. Un tube -->
-    <section class="section etapes" id="tube" aria-labelledby="tube-titre">
-      <div class="conteneur">
-        <p class="tategaki tategaki--marge" lang="ja" aria-hidden="true">筒の作り方</p>
-        <h2 id="tube-titre" class="etapes__titre" data-apparition>Un tube.<br />Zéro baguette.<br />Zéro <span class="rouge">dégât.</span></h2>
-        <ol class="etapes__liste" role="list">
-          {etapes.map((e) => (
-            <li class="etape" data-etape={e.id} data-apparition>
-              <span class="etape__num"><span class="etape__kanji" lang="ja" aria-hidden="true">{e.kanji}</span>{e.num}</span>
-              <h3>{e.titre} <span class="ja etape__ja" lang="ja" aria-hidden="true">{e.ja}</span></h3>
-              <p>{e.texte}</p>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
   </div>
 
-  <!-- 5. La carte -->
+  <!-- La carte -->
   <Carte />
 
-  <!-- 6. Ingrédients -->
-  <section class="section ingredients seigaiha" id="ingredients" aria-labelledby="ingredients-titre">
+  <!-- Le comptoir -->
+  <section class="section comptoir" id="comptoir" aria-labelledby="comptoir-titre">
+    <div class="conteneur comptoir__grille">
+      <!-- Photo du comptoir : passez src="/photos/comptoir.jpg" (et webp) pour remplacer l'illustration -->
+      <Photo class="comptoir__photo" ratio="4 / 3" alt="Un temaki tendu par-dessus le comptoir, sous la lanterne">
+        <div class="comptoir__scene" aria-hidden="true">
+          <div class="comptoir__lanterne"><Lanterne id="lanterne-comptoir" /></div>
+          <div class="comptoir__planche"></div>
+          <!-- support en bois où l'on pose les temaki, pointe en bas -->
+          <div class="comptoir__temaki comptoir__temaki--1"><Temaki roll={rolls[3]} /></div>
+          <div class="comptoir__temaki comptoir__temaki--2"><Temaki roll={rolls[4]} /></div>
+          <div class="comptoir__support"></div>
+        </div>
+      </Photo>
+      <div class="comptoir__texte">
+        <h2 id="comptoir-titre" data-apparition>Pourquoi au comptoir ?</h2>
+        <p class="chapo" data-apparition style="--rang: 1">
+          Un temaki n’attend pas : au bout de quelques minutes, la nori ramollit. Alors on le roule au moment où vous
+          commandez, et on vous le tend par-dessus le comptoir.
+        </p>
+        <p class="comptoir__infos mono" data-apparition style="--rang: 2">Halal · Ouvert 7j/7 · 11h–22h</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ingrédients -->
+  <section class="section ingredients" aria-labelledby="ingredients-titre">
     <div class="conteneur">
-      <p class="tategaki tategaki--marge" lang="ja" aria-hidden="true">食材</p>
-      <h2 id="ingredients-titre" data-apparition>Ce qu’on roule <span class="rouge">dedans.</span></h2>
-      <ul class="ingredients__grille" role="list">
+      <h2 id="ingredients-titre" data-apparition>Ce qu’il y a dans le cône</h2>
+      <ol class="ingredients__liste" role="list">
         {ingredientsVedettes.map((ing, i) => (
-          <li class="ingredient" data-apparition style={`--rang: ${i % 3}`}>
-            <div class="ingredient__cercle"><IngredientIcone id={ing.id} /></div>
+          <li data-apparition style={`--rang: ${i % 2}`}>
+            <span class="ingredients__num mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
             <h3>{ing.nom}</h3>
-            <p class="ja ingredient__ja" lang="ja" aria-hidden="true">{ing.ja}</p>
             <p>{ing.texte}</p>
           </li>
         ))}
-      </ul>
+      </ol>
     </div>
   </section>
 
-  <!-- 7. La Maison -->
-  <section class="section maison" id="maison" aria-labelledby="maison-titre">
+  <!-- Offre étudiante : ticket de comptoir -->
+  <section class="offre" aria-labelledby="offre-titre">
     <div class="conteneur">
-      <p class="tategaki tategaki--marge" lang="ja" aria-hidden="true">私たちの店</p>
-      <h2 id="maison-titre" data-apparition>La <span class="rouge">maison.</span></h2>
-      <dl class="maison__chiffres">
-        <div data-apparition><dt>100 %</dt><dd>halal, viandes et sauces certifiées <span class="ja maison__ja" lang="ja" aria-hidden="true">ハラール</span></dd></div>
-        <div data-apparition style="--rang: 1"><dt>7j/7</dt><dd>de 11h à 22h, midi et soir <span class="ja maison__ja" lang="ja" aria-hidden="true">毎日営業</span></dd></div>
-        <div data-apparition style="--rang: 2"><dt>5’</dt><dd>entre la commande et le tube en main <span class="ja maison__ja" lang="ja" aria-hidden="true">五分</span></dd></div>
-      </dl>
-      <p class="chapo maison__texte" data-apparition>
-        TSUTSU, c’est l’idée d’un sushi qu’on peut emporter partout. Pas de plateau, pas de baguettes :
-        un seul geste, un rouleau qu’on pousse hors de son étui. On roule tout devant vous, à la commande,
-        avec des produits frais livrés chaque matin.
-      </p>
+      <div class="ticket" data-apparition>
+        <div class="ticket__haut">
+          <p class="ticket__label mono">Ticket étudiant</p>
+          <!-- 学割 (gakuwari) : « réduction étudiante » -->
+          <p class="ticket__ja" lang="ja" aria-hidden="true">学割</p>
+        </div>
+        <h2 id="offre-titre" class="ticket__prix mono">{euros(offreEtudiante.prix)}</h2>
+        <p class="ticket__texte">{offreEtudiante.contenu}.</p>
+        <div class="ticket__bas">
+          <p class="mono ticket__mention">Valable tous les jours · sur place ou à emporter</p>
+          <button class="bouton" type="button" data-ouvrir-panier aria-haspopup="dialog">Commander <span class="fleche" aria-hidden="true">→</span></button>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- 8. Offre étudiante -->
-  <section class="offre seigaiha seigaiha--rouge" aria-labelledby="offre-titre">
-    <div class="conteneur">
-      <!-- 学割 (gakuwari) : « réduction étudiante » -->
-      <span class="hanko offre__hanko" lang="ja" aria-hidden="true">学割</span>
-      <p class="offre__label">Offre étudiante</p>
-      <h2 id="offre-titre" class="offre__prix">{euros(offreEtudiante.prix)}</h2>
-      <p class="offre__texte">{offreEtudiante.contenu}.</p>
-      <button class="bouton bouton--blanc" type="button" data-ouvrir-panier aria-haspopup="dialog">Commander <span class="fleche" aria-hidden="true">→</span></button>
-    </div>
-  </section>
-
-  <!-- 9. Réservation et infos -->
+  <!-- Réserver -->
   <Reservation />
+
+  <!-- Infos -->
+  <Infos />
 </Base>
 
-<script>
-  import '../scripts/tube.ts';
-</script>
-
 <style>
-  /* ---------- Zone du tube collant ---------- */
-  .zone-tube {
+  /* ---------- Hero ---------- */
+  .hero {
     position: relative;
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding-top: calc(var(--header) + var(--noren) + 20px);
+    padding-bottom: calc(var(--comptoir) + 24px);
+    overflow: hidden;
+    --noren: clamp(44px, 9vh, 104px);
+    --comptoir: clamp(52px, 13vh, 150px);
+    --lanterne-l: clamp(46px, min(8vw, 15vh), 132px);
   }
-  .zone-tube__piste {
+  .hero__fond {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    right: max(var(--marge), calc((100vw - var(--max)) / 2 + var(--marge)));
-    width: min(36vw, 460px);
-    z-index: 3;
-    pointer-events: none;
-    overflow-x: visible;
-    overflow-y: clip; /* le tube ne déborde jamais sur la section suivante (les légendes, elles, restent visibles sur les côtés) */
+    inset: 0;
   }
-  .zone-tube__collant {
-    position: sticky;
-    top: calc(var(--header) + 3vh);
-    height: calc(100svh - var(--header) - 6vh);
+  .hero__fond :global(.hero__photo) {
+    height: 100%;
+  }
+  .hero__fond::after {
+    /* voile sombre : garde le texte lisible, avec ou sans vraie photo */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(70% 60% at 50% 50%, rgba(18, 22, 31, 0.55), transparent 80%);
+    pointer-events: none;
+  }
+  .scene {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(40% 50% at 12% 30%, rgba(240, 162, 59, 0.16), transparent 70%),
+      radial-gradient(40% 50% at 88% 30%, rgba(240, 162, 59, 0.16), transparent 70%),
+      var(--encre);
+  }
+  /* Noren : rideau d'entrée en cinq pans, sous l'en-tête */
+  .scene__noren {
+    position: absolute;
+    top: var(--header);
+    left: 0;
+    right: 0;
+    height: var(--noren);
+    display: flex;
+    gap: 4px;
+  }
+  .scene__noren span {
+    flex: 1;
     display: grid;
     place-items: center;
+    background:
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.25), transparent 30%),
+      var(--surface-2);
+    border-radius: 0 0 4px 4px;
   }
-  .zone-tube__collant :global(.tube) {
-    width: min(100%, calc((100svh - var(--header) - 10vh) * 0.5));
-    grid-area: 1 / 1;
-    position: relative;
+  .scene__noren b {
+    font-family: var(--titre);
+    font-weight: 700;
+    font-size: clamp(20px, calc(var(--noren) * 0.5), 52px);
+    color: var(--papier);
+    opacity: 0.9;
   }
-  /* Ensō derrière le tube, phrase verticale à sa gauche (visibles dans la bannière) */
-  .zone-tube__enso {
-    grid-area: 1 / 1;
-    width: min(92%, 440px);
-    opacity: 1;
-    rotate: -12deg;
-    transition: opacity 600ms var(--ease), scale 900ms var(--ease);
+  .scene__lanterne {
+    position: absolute;
+    top: calc(var(--header) + var(--noren) * 0.35);
+    width: var(--lanterne-l);
   }
-  .zone-tube__phrase {
-    grid-area: 1 / 1;
-    justify-self: end; /* à droite du tube : ne touche jamais le titre */
-    align-self: center;
-    font-size: clamp(1.2rem, 0.8rem + 1vw, 1.8rem);
-    color: var(--noir);
-    transition: opacity 500ms var(--ease);
+  .scene__lanterne--g {
+    left: clamp(12px, 7vw, 140px);
   }
-  .zone-tube:not([data-etat='repos']) .zone-tube__phrase {
-    opacity: 0;
+  .scene__lanterne--d {
+    right: clamp(12px, 7vw, 140px);
   }
-  .zone-tube:not([data-etat='repos']) .zone-tube__enso {
-    opacity: 0.25;
-    scale: 0.92;
+  /* Comptoir en bois, avec trois temaki posés */
+  .scene__comptoir {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--comptoir);
+    background:
+      linear-gradient(to bottom, rgba(240, 162, 59, 0.55), rgba(240, 162, 59, 0) 3px),
+      repeating-linear-gradient(0deg, transparent 0 11px, rgba(0, 0, 0, 0.12) 11px 12px),
+      linear-gradient(to bottom, #3a2a1c, #241a12);
   }
-  @media (max-width: 1023px) {
-    .zone-tube__piste {
-      display: none;
-    }
+  .scene__temaki {
+    position: absolute;
+    bottom: calc(100% - 6px);
+    width: clamp(44px, min(6vw, 11vh), 150px);
+  }
+  .scene__temaki--1 {
+    left: 10%;
+    rotate: -10deg;
+  }
+  .scene__temaki--2 {
+    left: 20%;
+    rotate: 6deg;
+    width: clamp(36px, min(4.6vw, 8.5vh), 116px);
+  }
+  .scene__temaki--3 {
+    right: 12%;
+    rotate: -4deg;
   }
 
-  /* ---------- 2. Bannière ---------- */
-  .hero {
-    min-height: 100svh;
-    padding-top: calc(var(--header) + clamp(40px, 7vh, 80px));
-    padding-bottom: clamp(48px, 8vh, 96px);
-    display: flex;
-    align-items: center;
-  }
   .hero__contenu {
+    position: relative;
+    z-index: 1;
     display: grid;
-    gap: 28px;
-  }
-  .hero__contenu > * {
-    max-width: 62%;
+    justify-items: center;
+    gap: clamp(14px, 2.6vh, 26px);
+    text-align: center;
   }
   .hero h1 {
-    max-width: 11ch;
+    /* Taille limitée par la largeur ET la hauteur : tout tient dans le premier écran */
+    font-size: clamp(2.3rem, min(7.2vw, 8.6vh), 6.6rem);
+    line-height: 1.08;
+    max-width: 16ch;
   }
-  .hero__etiquettes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+  .hero h1 .accent {
+    display: block;
   }
-  .hero__statut-ligne {
-    display: none;
-    flex-basis: 100%;
-  }
-  .hero__ja {
-    padding: 2px 6px;
-    border-radius: 3px;
-    background: var(--noir);
-    color: #fff;
-    font-family: var(--kanji);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-  }
-  .hero__statut[data-ouvert='true'] .hero__ja {
-    background: var(--rouge-fonce);
+  .hero__texte {
+    max-width: 50ch;
+    color: var(--papier);
+    opacity: 0.86;
+    font-size: clamp(1rem, 0.9rem + 0.35vw, 1.2rem);
   }
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 16px 28px;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 6px;
   }
-  .hero__tube-mobile {
-    display: none;
-  }
-  .hero__tube-mobile :global(.tube__legende) {
-    display: none; /* pas de légendes sur le petit tube */
-  }
-  @media (max-width: 1023px) {
-    .hero__contenu > * {
-      max-width: none;
+  @media (max-width: 719px) {
+    .hero {
+      --noren: 40px;
+      --comptoir: 44px;
     }
-    .hero__tube-mobile {
-      display: grid;
-      place-items: center;
-      width: min(72vw, 320px);
-      margin: -8px auto 0;
+    .scene__lanterne {
+      top: calc(var(--header) + 10px);
     }
-    .hero__tube-mobile > :global(*) {
-      grid-area: 1 / 1; /* ensō, phrase et tube superposés dans la même case */
+    .scene__temaki--2 {
+      display: none;
     }
-    .hero__tube-mobile :global(.tube) {
-      width: 72%;
-      position: relative;
-    }
-    .hero__enso {
+    .hero__actions {
       width: 100%;
-      rotate: -12deg;
+      flex-direction: column;
+      align-items: stretch;
     }
-    .hero__phrase {
-      justify-self: end;
-      font-size: 1.05rem;
-      color: var(--noir);
-    }
-    .hero__statut-ligne {
-      display: block;
+  }
+  @media (max-height: 560px) {
+    .scene__temaki {
+      display: none;
     }
   }
 
-  /* ---------- 3. Bande défilante ---------- */
-  .bande-cadre {
-    overflow: hidden; /* la bande inclinée dépasse : on coupe ce qui sort de l'écran */
-    padding-block: 14px;
-    position: relative;
-    z-index: 2;
-  }
+  /* ---------- Bandeau défilant ---------- */
   .bande {
-    position: relative;
-    z-index: 2;
-    background: var(--noir);
-    color: var(--papier);
     overflow: hidden;
-    padding: 18px 0;
-    rotate: -1.2deg;
-    margin-inline: -2vw;
+    padding: 16px 0;
+    border-block: 1px solid var(--ligne);
+    background: var(--surface);
   }
   .bande__piste {
     display: flex;
     width: max-content;
-    animation: defile 38s linear infinite;
+    animation: defile 44s linear infinite;
   }
   .bande:hover .bande__piste {
     animation-play-state: paused;
@@ -346,17 +310,12 @@ const etapes = [
     gap: 28px;
     padding-right: 28px;
     font-family: var(--titre);
-    font-size: clamp(1.4rem, 1rem + 1.6vw, 2.4rem);
-    text-transform: uppercase;
+    font-weight: 700;
+    font-size: clamp(1.1rem, 0.9rem + 0.8vw, 1.6rem);
     white-space: nowrap;
   }
-  .bande__etoile {
-    color: var(--rouge);
-  }
-  .bande__ja {
-    font-family: var(--kanji-display);
-    color: var(--kraft);
-    letter-spacing: 0.12em;
+  .bande__sep {
+    color: var(--lanterne);
   }
   @keyframes defile {
     to {
@@ -369,213 +328,183 @@ const etapes = [
     }
   }
 
-  /* ---------- 4. Un tube ---------- */
-  .etapes__titre {
-    max-width: 12ch;
-    margin-bottom: clamp(40px, 8vh, 96px);
-  }
-  .etapes__liste {
-    max-width: 56%;
+  /* ---------- Le comptoir ---------- */
+  .comptoir__grille {
     display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: clamp(32px, 6vw, 96px);
+    align-items: center;
   }
-  .etape {
-    min-height: 62vh;
+  .comptoir__grille :global(.comptoir__photo) {
+    border-radius: var(--rayon);
+    border: 1px solid var(--ligne);
+  }
+  .comptoir__scene {
+    position: absolute;
+    inset: 0;
+  }
+  .comptoir__lanterne {
+    position: absolute;
+    top: -4%;
+    left: 14%;
+    width: 18%;
+  }
+  .comptoir__planche {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 26%;
+    background:
+      linear-gradient(to bottom, rgba(240, 162, 59, 0.5), rgba(240, 162, 59, 0) 3px),
+      repeating-linear-gradient(0deg, transparent 0 9px, rgba(0, 0, 0, 0.12) 9px 10px),
+      linear-gradient(to bottom, #3a2a1c, #241a12);
+  }
+  .comptoir__temaki {
+    position: absolute;
+    bottom: 27%;
+    width: 22%;
+  }
+  .comptoir__temaki--1 {
+    left: 46%;
+    rotate: -8deg;
+  }
+  .comptoir__temaki--2 {
+    left: 66%;
+    rotate: 7deg;
+  }
+  .comptoir__support {
+    position: absolute;
+    left: 42%;
+    width: 50%;
+    bottom: 24%;
+    height: 12%;
+    border-radius: 6px 6px 2px 2px;
+    background:
+      linear-gradient(to bottom, rgba(240, 162, 59, 0.45), rgba(240, 162, 59, 0) 2px),
+      linear-gradient(to bottom, #5a4130, #3a2a1c);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+  }
+  .comptoir__texte {
     display: grid;
-    align-content: center;
-    gap: 14px;
-    padding-block: 40px;
-    border-top: 2px solid var(--noir);
-    color: var(--gris); /* étape inactive : grisée mais lisible (5,9:1) */
-    transition: color 500ms var(--ease);
+    gap: 20px;
   }
-  .etape:global(.actif) {
-    color: var(--noir);
+  .comptoir__infos {
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    color: var(--lanterne);
   }
-  .etape__num {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    font-family: var(--titre);
-    font-size: 1rem;
-    color: var(--rouge-fonce);
-  }
-  .etape__kanji {
-    font-family: var(--kanji-display);
-    font-size: clamp(2.6rem, 1.8rem + 2.4vw, 4rem);
-    line-height: 1;
-    color: var(--rouge);
-  }
-  .etape__ja {
-    display: block;
-    margin-top: 8px;
-    font-size: 0.42em;
-    color: var(--rouge-fonce);
-  }
-  .etape h3 {
-    font-size: clamp(2rem, 1.4rem + 2.4vw, 3.6rem);
-  }
-  .etape p {
-    max-width: 46ch;
-    font-size: 1.1rem;
-  }
-  @media (max-width: 1023px) {
-    .etapes__liste {
-      max-width: none;
-    }
-    .etape {
-      min-height: 0;
-      color: var(--noir);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .etape {
-      transition: none;
-    }
-  }
-
-  /* ---------- 6. Ingrédients ---------- */
-  .ingredients {
-    background: var(--noir);
-    color: var(--papier);
-  }
-  .ingredients__grille {
-    margin-top: clamp(40px, 6vw, 80px);
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(32px, 4vw, 56px) 32px;
-  }
-  .ingredient {
-    display: grid;
-    justify-items: center;
-    text-align: center;
-    gap: 12px;
-  }
-  .ingredient__cercle {
-    width: min(160px, 70%);
-    transition: transform 500ms var(--ease);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .ingredient:hover .ingredient__cercle {
-      transform: rotate(-10deg) scale(1.06);
-    }
-  }
-  .ingredient h3 {
-    color: var(--kraft);
-  }
-  .ingredient__ja {
-    margin-top: -6px;
-    color: var(--rouge);
-    font-size: 1.05rem;
-  }
-  .ingredients .tategaki {
-    color: var(--kraft);
-  }
-  .ingredient p {
-    max-width: 30ch;
-    color: #d6d3cc;
-  }
-  @media (max-width: 767px) {
-    .ingredients__grille {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  /* ---------- 7. La Maison ---------- */
-  .maison__chiffres {
-    margin: clamp(40px, 6vw, 72px) 0;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    border-top: 2px solid var(--noir);
-  }
-  .maison__chiffres > div {
-    padding: 28px 24px 8px 0;
-  }
-  .maison__chiffres > div + div {
-    padding-left: 24px;
-    border-left: 2px solid var(--noir);
-  }
-  .maison__chiffres dt {
-    font-family: var(--titre);
-    font-size: clamp(3.4rem, 2rem + 5vw, 7rem);
-    line-height: 0.9;
-    letter-spacing: -0.03em;
-  }
-  .maison__chiffres dd {
-    margin-top: 10px;
-    font-weight: 600;
-    max-width: 22ch;
-  }
-  .maison__ja {
-    display: block;
-    margin-top: 6px;
-    color: var(--rouge-fonce);
-    font-size: 0.95rem;
-  }
-  .maison__texte {
-    max-width: 60ch;
-  }
-  @media (max-width: 767px) {
-    .maison__chiffres {
+  @media (max-width: 899px) {
+    .comptoir__grille {
       grid-template-columns: 1fr;
     }
-    .maison__chiffres > div + div {
-      padding-left: 0;
-      border-left: 0;
-      border-top: 2px solid var(--noir);
+  }
+
+  /* ---------- Ingrédients : liste éditoriale sur deux colonnes ---------- */
+  .ingredients {
+    padding-top: 0;
+  }
+  .ingredients__liste {
+    margin-top: clamp(32px, 5vw, 64px);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(32px, 6vw, 96px);
+    border-top: 1px solid var(--ligne);
+  }
+  .ingredients__liste li {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 4px 16px;
+    padding-block: 22px;
+    border-bottom: 1px solid var(--ligne);
+  }
+  .ingredients__num {
+    grid-row: span 2;
+    padding-top: 4px;
+    font-size: 14px;
+    color: var(--lanterne);
+  }
+  .ingredients__liste p {
+    color: var(--texte-2);
+  }
+  @media (max-width: 767px) {
+    .ingredients__liste {
+      grid-template-columns: 1fr;
     }
   }
 
-  /* ---------- 8. Offre étudiante ---------- */
+  /* ---------- Offre étudiante : ticket de comptoir ---------- */
   .offre {
-    background: var(--rouge);
-    color: #fff;
-    min-height: 80svh;
-    display: flex;
-    align-items: center;
-    padding-block: 96px;
+    padding-bottom: clamp(72px, 10vw, 136px);
   }
-  .offre .conteneur {
+  .ticket {
+    position: relative;
+    max-width: 640px;
+    margin-inline: auto;
     display: grid;
-    gap: 22px;
-    justify-items: start;
+    gap: 14px;
+    padding: clamp(24px, 4vw, 40px);
+    background: var(--papier);
+    color: var(--encre);
+    border-radius: 6px;
+    rotate: -1.2deg;
+    /* encoches de ticket sur les côtés */
+    -webkit-mask: radial-gradient(14px at 0 62%, #0000 98%, #000) left / 51% 100% no-repeat,
+      radial-gradient(14px at 100% 62%, #0000 98%, #000) right / 51% 100% no-repeat;
+    mask: radial-gradient(14px at 0 62%, #0000 98%, #000) left / 51% 100% no-repeat,
+      radial-gradient(14px at 100% 62%, #0000 98%, #000) right / 51% 100% no-repeat;
   }
-  .offre__hanko {
-    position: absolute;
-    right: var(--marge);
-    top: 0;
-    min-width: clamp(84px, 9vw, 130px);
-    min-height: clamp(84px, 9vw, 130px);
-    font-family: var(--kanji-display);
-    font-weight: 400;
-    font-size: clamp(2rem, 1.2rem + 2.4vw, 3.4rem);
-    background: #fff;
-    color: var(--rouge-fonce);
-    box-shadow: inset 0 0 0 3px #fff, inset 0 0 0 6px var(--rouge-fonce);
-    rotate: 8deg;
+  .ticket__haut {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1.5px dashed rgba(18, 22, 31, 0.3);
   }
-  @media (max-width: 767px) {
-    .offre__hanko {
-      position: static; /* sur mobile : au-dessus du titre, sans rien recouvrir */
-      min-width: 76px;
-      min-height: 76px;
-      font-size: 1.9rem;
-    }
-  }
-  .offre__label {
-    font-family: var(--titre);
-    font-size: clamp(1.6rem, 1rem + 2.4vw, 3rem);
+  .ticket__label {
+    font-size: 13px;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
+  }
+  .ticket__ja {
+    font-family: var(--titre);
+    font-weight: 700;
+    font-size: 18px;
+    color: #b13a20;
+    letter-spacing: 0.1em;
+  }
+  .ticket__prix {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: clamp(3.4rem, 2rem + 6vw, 6rem);
     line-height: 1;
+    letter-spacing: -0.03em;
   }
-  .offre__prix {
-    font-size: clamp(5rem, 2rem + 13vw, 15rem);
-    line-height: 0.85;
-    letter-spacing: -0.04em;
+  .ticket__texte {
+    font-size: clamp(1.1rem, 1rem + 0.4vw, 1.3rem);
+    font-weight: 500;
   }
-  .offre__texte {
-    font-size: clamp(1.5rem, 1.1rem + 1vw, 2rem); /* grand texte : contraste suffisant sur le rouge */
-    font-weight: 800;
-    max-width: 26ch;
-    line-height: 1.25;
+  .ticket__bas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 10px;
+    padding-top: 18px;
+    border-top: 1.5px dashed rgba(18, 22, 31, 0.3);
+  }
+  .ticket__mention {
+    font-size: 13px;
+    color: #4a4740;
+  }
+  .ticket .bouton {
+    background: var(--encre);
+    border-color: var(--encre);
+    color: var(--papier);
+  }
+  .ticket .bouton:hover {
+    background: var(--surface-2);
   }
 </style>

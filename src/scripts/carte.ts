@@ -27,7 +27,7 @@ function filtrer(filtre: string) {
     }
     void i;
   });
-  if (annonce) annonce.textContent = `${n} roll${n > 1 ? 's' : ''} affiché${n > 1 ? 's' : ''}`;
+  if (annonce) annonce.textContent = `${n} temaki affiché${n > 1 ? 's' : ''}`;
 }
 boutons.forEach((b) => b.addEventListener('click', () => filtrer(b.dataset.filtre ?? 'tous')));
 

@@ -1,0 +1,78 @@
+---
+// =====================================================================
+// PHOTO — emplacement prêt pour les vraies photos du client.
+//
+// Tant qu'aucune photo n'est fournie (src absent), on affiche l'illustration passée
+// en contenu (slot) sur un fond sombre : le site reste joli sans aucune photo.
+//
+// Pour mettre une vraie photo :
+//   1. Déposez les fichiers dans  public/photos/  (ex. public/photos/comptoir.jpg et comptoir.webp).
+//      Taille conseillée : 1600 px de large pour le hero, 1200 px pour le comptoir, 800 px pour les produits.
+//   2. Passez-les au composant :
+//        <Photo src="/photos/comptoir.jpg" webp="/photos/comptoir.webp" alt="…" largeur={1200} hauteur={900} />
+//      Pour les produits, ajoutez simplement  photo: '/photos/<id>.jpg'  (et photoWebp) dans src/data/menu.ts.
+//   3. Le texte alt est obligatoire : décrivez ce qu'on voit (« Temaki saumon-avocat posé sur le comptoir »).
+// =====================================================================
+interface Props {
+  alt: string; // obligatoire, même pour l'illustration d'attente
+  src?: string; // photo JPG ou PNG (dans public/photos/)
+  webp?: string; // version WebP, plus légère, servie en priorité
+  largeur?: number;
+  hauteur?: number;
+  ratio?: string; // ex. « 4 / 3 » ; vide = la photo remplit son parent
+  prioritaire?: boolean; // true pour la photo du haut de page (chargée tout de suite)
+  class?: string;
+}
+const { alt, src, webp, largeur, hauteur, ratio, prioritaire = false, class: classe } = Astro.props;
+---
+
+<figure class:list={['photo', classe]} style={ratio ? `aspect-ratio: ${ratio}` : undefined}>
+  {
+    src ? (
+      <picture>
+        {webp && <source srcset={webp} type="image/webp" />}
+        <img
+          src={src}
+          alt={alt}
+          width={largeur}
+          height={hauteur}
+          loading={prioritaire ? 'eager' : 'lazy'}
+          fetchpriority={prioritaire ? 'high' : undefined}
+          decoding="async"
+        />
+      </picture>
+    ) : (
+      <div class="photo__attente" role="img" aria-label={alt}>
+        <slot />
+      </div>
+    )
+  }
+</figure>
+
+<style>
+  .photo {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .photo picture,
+  .photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .photo img {
+    object-fit: cover;
+  }
+  /* Illustration d'attente : halo chaud au centre + fines rayures façon bois de comptoir */
+  .photo__attente {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(60% 55% at 50% 45%, rgba(240, 162, 59, 0.18), transparent 70%),
+      repeating-linear-gradient(0deg, transparent 0 22px, rgba(242, 235, 221, 0.025) 22px 23px),
+      var(--surface);
+  }
+</style>

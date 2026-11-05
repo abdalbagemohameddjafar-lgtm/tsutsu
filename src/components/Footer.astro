@@ -1,176 +1,82 @@
 ---
-// Pied de page noir : adresse, bloc rouge « Commander », Instagram, horaires,
-// puis le logo TSUTSU géant pleine largeur et les mentions légales.
-import { restaurant, horairesTexte } from '../config/restaurant';
+// Pied de page léger : logo, liens légaux, Instagram, crédit.
+// (Horaires, adresse et téléphone sont dans la section « Infos » de l'accueil, une seule fois.)
+import Logo from './Logo.astro';
+import { restaurant } from '../config/restaurant';
 interface Props {
   accueil?: boolean;
 }
 const { accueil = false } = Astro.props;
-void accueil; // gardé pour un usage futur (liens d'ancre)
 const annee = new Date().getFullYear();
-const { adresse } = restaurant;
 ---
 
 <footer class="pied">
-  <div class="conteneur pied__colonnes">
-    <!-- ごちそうさまでした : « merci pour ce repas », ce qu'on dit au Japon en fin de repas -->
-    <p class="tategaki tategaki--marge pied__merci" lang="ja" aria-hidden="true">ごちそうさまでした</p>
-    <div>
-      <p class="pied__label">Adresse</p>
-      <address>
-        {adresse.rue}<br />{adresse.codePostal} {adresse.ville}
-      </address>
-      <p><a class="pied__lien" href={`tel:${restaurant.telephone.lien}`}>{restaurant.telephone.affichage}</a></p>
-    </div>
-
-    <div class="pied__commander">
-      <p class="pied__label">Click & collect</p>
-      <p class="pied__accroche">Commandez, on roule, vous passez récupérer.</p>
-      <button class="bouton bouton--blanc" type="button" data-ouvrir-panier aria-haspopup="dialog">
-        Commander en click & collect <span class="fleche" aria-hidden="true">→</span>
-      </button>
-    </div>
-
-    <div>
-      <p class="pied__label">Instagram</p>
-      <p><a class="pied__lien" href={restaurant.instagram.url} rel="noopener">{restaurant.instagram.pseudo}</a></p>
-      <p class="pied__label pied__label--espace">Horaires</p>
-      {horairesTexte.map((h) => <p>{h.jours} · {h.heures}</p>)}
-      <p class="statut-pied" data-statut><span data-statut-texte></span></p>
-    </div>
-  </div>
-
-  <p class="pied__geant" aria-hidden="true">TSUTSU<span lang="ja">筒</span></p>
-
-  <div class="conteneur pied__legal">
-    <p>© {annee} {restaurant.nom} · Restaurant fictif</p>
-    <nav aria-label="Liens légaux">
+  <div class="conteneur pied__ligne">
+    <a class="pied__logo" href={accueil ? '#top' : '/'}><Logo /><span class="cache"> — accueil</span></a>
+    <nav class="pied__nav" aria-label="Liens du pied de page">
       <a href="/carte">Carte et allergènes</a>
       <a href="/mentions-legales">Mentions légales</a>
       <a href="/confidentialite">Confidentialité</a>
+      <a href={restaurant.instagram.url} rel="noopener">Instagram</a>
     </nav>
-    <p>
-      Site de démonstration — réalisé par <a href={restaurant.realisePar.url} rel="noopener">{restaurant.realisePar.nom}</a>
-    </p>
+  </div>
+  <div class="conteneur pied__legal">
+    <p>© {annee} {restaurant.nom} · Restaurant fictif, site de démonstration</p>
+    <p>Réalisé par <a href={restaurant.realisePar.url} rel="noopener">{restaurant.realisePar.nom}</a></p>
   </div>
   <span class="cache" aria-live="polite" data-annonce-panier></span>
 </footer>
 
 <style>
   .pied {
-    background: var(--noir);
+    border-top: 1px solid var(--ligne);
+    padding-block: 32px 28px;
+    font-size: 15px;
+    color: var(--texte-2);
+  }
+  .pied__ligne {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 32px;
+  }
+  .pied__logo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 19px;
     color: var(--papier);
-    padding-top: clamp(64px, 8vw, 110px);
-    overflow: hidden;
+    text-decoration: none;
   }
-  .pied__colonnes {
-    display: grid;
-    grid-template-columns: 1fr 1.3fr 1fr;
-    gap: 40px;
-    align-items: start;
+  .pied__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 8px;
+    margin-inline: -10px;
   }
-  .pied__label {
-    font-weight: 800;
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--kraft);
-    margin-bottom: 10px;
-  }
-  .pied__label--espace {
-    margin-top: 24px;
-  }
-  address {
-    font-style: normal;
-    margin-bottom: 8px;
-  }
-  .pied__lien {
-    font-weight: 700;
+  .pied a:not(.pied__logo) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 10px;
     text-underline-offset: 4px;
   }
-  .pied__lien:hover {
-    color: var(--kraft);
+  .pied__legal a {
+    padding-inline: 0 !important;
   }
-  .pied__commander {
-    background: var(--rouge-fonce);
-    padding: 28px;
-    border-radius: var(--rayon);
-    display: grid;
-    gap: 14px;
-    justify-items: start;
-  }
-  .pied__commander .pied__label {
-    color: #fff;
-    margin: 0;
-  }
-  .pied__accroche {
-    font-family: var(--titre);
-    font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.1rem);
-    line-height: 1;
-    text-transform: uppercase;
-  }
-  :global(.bouton--blanc) {
-    background: #fff;
-    color: var(--noir);
-    border-color: #fff;
-  }
-  :global(.bouton--blanc:hover) {
-    background: var(--noir);
-    color: #fff;
-    border-color: var(--noir);
-  }
-  .statut-pied {
-    margin-top: 6px;
-    color: var(--kraft);
-    font-weight: 700;
-    font-size: 14px;
-  }
-  .pied__merci {
-    color: var(--kraft);
-  }
-  .pied__geant {
-    font-family: var(--titre);
-    font-size: 18.6vw; /* le mot + le kanji tiennent pile dans la largeur */
-    line-height: 0.8;
-    letter-spacing: -0.03em;
-    text-align: center;
-    margin: clamp(56px, 8vw, 100px) 0 0;
-    color: var(--papier);
-    white-space: nowrap;
-  }
-  .pied__geant span {
-    font-family: var(--kanji);
-    font-weight: 700;
-    font-size: 0.32em;
-    color: var(--rouge);
-    vertical-align: top;
-    margin-left: 0.04em;
+  .pied a:hover {
+    color: var(--lanterne);
   }
   .pied__legal {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    gap: 12px 28px;
-    padding-block: 28px 32px;
-    margin-top: 24px;
-    border-top: 1px solid rgb(244 242 238 / 0.2);
+    gap: 0 24px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ligne);
     font-size: 14px;
-    color: #c9c6bf; /* 10:1 sur le noir */
-  }
-  .pied__legal nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 22px;
-  }
-  .pied__legal a {
-    text-underline-offset: 3px;
-  }
-  .pied__legal a:hover {
-    color: #fff;
-  }
-  @media (max-width: 859px) {
-    .pied__colonnes {
-      grid-template-columns: 1fr;
-    }
   }
 </style>

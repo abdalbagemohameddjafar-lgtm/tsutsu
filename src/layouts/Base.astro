@@ -1,7 +1,14 @@
 ---
 // Gabarit commun : <head> (SEO, Open Graph, JSON-LD Restaurant), en-tête, panier, pied de page.
-import '@fontsource/archivo-black/latin-400.css';
-import '@fontsource-variable/inter/wght.css';
+// Polices auto-hébergées (sous-ensembles latins). Les kanji du site utilisent une version allégée
+// de Shippori Mincho B1 (public/fonts, déclarée dans global.css), régénérée par outils/police-japonaise.py.
+import '@fontsource/shippori-mincho-b1/latin-700.css';
+import '@fontsource/shippori-mincho-b1/latin-800.css';
+import '@fontsource/zen-kaku-gothic-new/latin-400.css';
+import '@fontsource/zen-kaku-gothic-new/latin-500.css';
+import '@fontsource/zen-kaku-gothic-new/latin-700.css';
+import '@fontsource/dm-mono/latin-400.css';
+import '@fontsource/dm-mono/latin-500.css';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -17,7 +24,7 @@ interface Props {
   noindex?: boolean;
 }
 const {
-  titre = 'TSUTSU · Le sushi qui tient dans la main · Metz',
+  titre = 'TSUTSU · Comptoir à temaki à Metz · Roulé à la main, mangé dans la minute',
   description = restaurant.description,
   accueil = false,
   noindex = false,
@@ -35,7 +42,7 @@ const jsonLd = {
   url: restaurant.site,
   image: new URL('/og-tsutsu.png', Astro.site).href,
   telephone: restaurant.telephone.lien,
-  servesCuisine: ['Japonaise', 'Sushi'],
+  servesCuisine: ['Japonaise', 'Temaki', 'Sushi'],
   priceRange: '€',
   acceptsReservations: true,
   address: {
@@ -57,7 +64,7 @@ const jsonLd = {
     '@type': 'Menu',
     hasMenuSection: {
       '@type': 'MenuSection',
-      name: 'Rolls en tube',
+      name: 'Temaki roulés à la main',
       hasMenuItem: rolls.map((r) => ({
         '@type': 'MenuItem',
         name: r.nom,
@@ -82,7 +89,7 @@ const jsonLd = {
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#f4f2ee" />
+    <meta name="theme-color" content="#12161f" />
     <meta property="og:type" content="restaurant" />
     <meta property="og:locale" content="fr_FR" />
     <meta property="og:site_name" content="TSUTSU" />
@@ -92,6 +99,7 @@ const jsonLd = {
     <meta property="og:image" content={new URL('/og-tsutsu.png', Astro.site)} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="TSUTSU, comptoir à temaki à Metz : une lanterne allumée au-dessus d'un temaki." />
     <meta name="twitter:card" content="summary_large_image" />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <!-- Ajoute .js tout de suite : les animations d'apparition ne cachent rien sans JavaScript -->

@@ -1,8 +1,9 @@
 ---
-// Section « La carte » : filtres en pastilles, grille des 6 rolls, fenêtre détaillée (ingrédients + allergènes).
+// Section « La carte du comptoir » : filtres en pastilles, grille des 6 temaki, fenêtre détaillée (ingrédients + allergènes).
 // Données : src/data/menu.ts · Logique : src/scripts/carte.ts
-import Roll from './Roll.astro';
-import { rolls, TAGS, TAGS_JA, ALLERGENES, sansGluten } from '../data/menu';
+import Temaki from './Temaki.astro';
+import Photo from './Photo.astro';
+import { rolls, TAGS, ALLERGENES, sansGluten } from '../data/menu';
 import { euros } from '../lib/format';
 
 const filtres = [
@@ -11,24 +12,26 @@ const filtres = [
   { id: 'epice', texte: 'Épicé' },
   { id: 'sansgluten', texte: 'Sans gluten' },
 ];
+const prixMin = Math.min(...rolls.map((r) => r.prix));
+const prixMax = Math.max(...rolls.map((r) => r.prix));
 ---
 
 <section class="section carte" id="carte" aria-labelledby="carte-titre">
   <div class="conteneur">
-    <!-- お品書き (oshinagaki) : « la carte » dans un restaurant japonais -->
-    <p class="tategaki tategaki--marge" lang="ja" aria-hidden="true">お品書き</p>
     <div class="carte__tete">
-      <h2 id="carte-titre" data-apparition>Six rollz.<br />Un seul <span class="rouge">format.</span></h2>
+      <h2 id="carte-titre" data-apparition>La carte du comptoir</h2>
       <p class="chapo" data-apparition style="--rang: 1">
-        Même tube, six recettes. Roulés à la commande, prêts en 5 minutes.
-        <a class="lien" href="/carte">Voir la carte complète et les allergènes</a>
+        Six temaki, roulés à la commande. De <span class="mono">{euros(prixMin)}</span> à <span class="mono">{euros(prixMax)}</span>.
       </p>
     </div>
 
-    <div class="carte__filtres" role="group" aria-label="Filtrer la carte">
-      {filtres.map((f, i) => (
-        <button class="pastille" type="button" data-filtre={f.id} aria-pressed={i === 0 ? 'true' : 'false'}>{f.texte}</button>
-      ))}
+    <div class="carte__barre">
+      <div class="carte__filtres" role="group" aria-label="Filtrer la carte">
+        {filtres.map((f, i) => (
+          <button class="pastille" type="button" data-filtre={f.id} aria-pressed={i === 0 ? 'true' : 'false'}>{f.texte}</button>
+        ))}
+      </div>
+      <a class="lien" href="/carte">Carte complète et allergènes</a>
     </div>
     <p class="cache" data-filtre-annonce aria-live="polite"></p>
 
@@ -41,20 +44,21 @@ const filtres = [
           style={`--rang: ${i % 3}`}
         >
           <button class="roll-carte__ouvrir" type="button" data-ouvrir-roll={r.id} aria-haspopup="dialog">
-            <span class="roll-carte__visuel"><Roll roll={r} /></span>
-            {r.tags.includes('bestseller') && <span class="hanko roll-carte__hanko" lang="ja" aria-hidden="true">{TAGS_JA.bestseller}</span>}
+            <Photo class="roll-carte__visuel" ratio="4 / 3" src={r.photo} webp={r.photoWebp} alt={`${r.nom} : ${r.description}`}>
+              <Temaki roll={r} class="roll-carte__temaki" />
+            </Photo>
             <span class="roll-carte__nom">{r.nom}</span>
             <span class="ja roll-carte__ja" lang="ja">{r.nomJa}</span>
             <span class="cache">, voir les ingrédients et allergènes</span>
           </button>
-          <ul class="roll-carte__tags" role="list">
-            {r.tags.map((t) => <li class={`tag tag--${t}`}><span class="tag__ja" lang="ja" aria-hidden="true">{TAGS_JA[t]}</span>{TAGS[t]}</li>)}
-            {sansGluten(r) && <li class="tag tag--sg">Sans gluten</li>}
+          <ul class="roll-carte__tags" role="list" aria-label="Étiquettes">
+            {r.tags.map((t) => <li class={`badge badge--${t}`}>{TAGS[t]}</li>)}
+            {sansGluten(r) && <li class="badge">Sans gluten</li>}
           </ul>
           <p class="roll-carte__desc">{r.description}</p>
           <div class="roll-carte__pied">
             <span class="roll-carte__prix">{euros(r.prix)}</span>
-            <button class="bouton bouton--noir roll-carte__ajouter" type="button" data-ajouter={r.id}>
+            <button class="bouton bouton--contour bouton--petit roll-carte__ajouter" type="button" data-ajouter={r.id}>
               <span data-texte-bouton>+ Ajouter</span><span class="cache"> {r.nom} au panier</span>
             </button>
           </div>
@@ -63,14 +67,14 @@ const filtres = [
     </ul>
   </div>
 
-  <!-- Fenêtres détaillées (une par roll) -->
+  <!-- Fenêtres détaillées (une par temaki) -->
   {rolls.map((r) => (
     <dialog class="modale" id={`roll-${r.id}`} aria-labelledby={`roll-${r.id}-titre`}>
       <div class="modale__corps">
         <button class="modale__fermer" type="button" data-fermer-modale aria-label="Fermer">
-          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" /></svg>
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
         </button>
-        <div class="modale__visuel"><Roll roll={r} /></div>
+        <div class="modale__visuel"><Temaki roll={r} /></div>
         <div class="modale__texte">
           <h3 id={`roll-${r.id}-titre`}>{r.nom}</h3>
           <p class="ja modale__ja" lang="ja">{r.nomJa}</p>
@@ -98,20 +102,21 @@ const filtres = [
 <style>
   .carte__tete {
     display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 32px;
-    align-items: end;
-    margin-bottom: 40px;
+    gap: 16px;
+    margin-bottom: 36px;
   }
-  .carte__tete .lien {
-    display: inline-block;
-    margin-top: 12px;
+  .carte__barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 24px;
+    margin-bottom: 28px;
   }
   .carte__filtres {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 32px;
+    gap: 8px;
   }
   .carte__grille {
     display: grid;
@@ -121,123 +126,90 @@ const filtres = [
   .roll-carte {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 20px;
-    background: #fff;
-    border: 2px solid var(--noir);
+    gap: 14px;
+    padding: 14px 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--ligne);
     border-radius: var(--rayon);
     transition:
       transform 300ms var(--ease),
-      box-shadow 300ms var(--ease);
-  }
-  .roll-carte[hidden] {
-    display: none;
+      border-color 300ms var(--ease);
   }
   @media (hover: hover) and (pointer: fine) {
     .roll-carte:hover {
-      transform: translateY(-4px);
-      box-shadow: 6px 6px 0 var(--noir);
+      transform: translateY(-3px);
+      border-color: var(--ligne-forte);
     }
-    .roll-carte:hover .roll-carte__visuel {
-      transform: rotate(18deg) scale(1.04);
+    .roll-carte:hover :global(.roll-carte__temaki) {
+      transform: rotate(-4deg) scale(1.04);
     }
   }
   .roll-carte__ouvrir {
-    position: relative;
     display: grid;
-    gap: 14px;
+    gap: 4px;
     padding: 0;
     border: 0;
     background: none;
     text-align: left;
     cursor: pointer;
   }
-  .roll-carte__visuel {
-    display: block;
-    width: 72%;
-    margin: 8px auto 4px;
+  .roll-carte__ouvrir :global(.roll-carte__visuel) {
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .roll-carte__ouvrir :global(.roll-carte__temaki) {
+    width: 46%;
     transition: transform 600ms var(--ease);
   }
   .roll-carte__nom {
+    padding-inline: 6px;
     font-family: var(--titre);
-    text-transform: uppercase;
-    font-size: clamp(1.4rem, 1.1rem + 0.8vw, 1.8rem);
-    line-height: 1;
+    font-weight: 800;
+    font-size: clamp(1.3rem, 1.1rem + 0.6vw, 1.6rem);
+    line-height: 1.2;
   }
   .roll-carte__ouvrir:hover .roll-carte__nom {
-    color: var(--rouge-fonce);
+    color: var(--lanterne);
   }
   .roll-carte__ja {
-    margin-top: -8px;
-    font-size: 14px;
-    color: var(--rouge-fonce);
+    padding-inline: 6px;
+    font-size: 13px;
+    color: var(--texte-2);
   }
-  /* Tampon 人気 (populaire) posé en haut à droite de l'illustration */
-  .roll-carte__hanko {
-    position: absolute;
-    top: 0;
-    right: 0;
-  }
+  /* Ligne d'étiquettes : hauteur réservée même sans badge, pour aligner toutes les cartes */
   .roll-carte__tags {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     min-height: 26px;
-  }
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    background: var(--papier);
-    border: 1.5px solid var(--noir);
-  }
-  .tag__ja {
-    font-family: var(--kanji);
-    font-size: 11px;
-    letter-spacing: 0;
-  }
-  .tag--epice {
-    background: var(--rouge-fonce);
-    border-color: var(--rouge-fonce);
-    color: #fff;
-  }
-  .tag--bestseller {
-    background: var(--noir);
-    color: #fff;
-  }
-  .tag--vege {
-    background: #d9ecc4;
+    padding-inline: 6px;
   }
   .roll-carte__desc {
-    color: var(--gris);
     flex: 1;
+    padding-inline: 6px;
+    color: var(--texte-2);
+    font-size: 16px;
+    line-height: 1.6;
   }
   .roll-carte__pied {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
+    margin-inline: 6px;
     padding-top: 14px;
-    border-top: 1.5px dashed var(--filet);
+    border-top: 1px dashed var(--ligne-forte);
   }
   .roll-carte__prix {
-    font-family: var(--titre);
-    font-size: 1.6rem;
-  }
-  .roll-carte__ajouter {
-    min-height: 46px;
-    padding: 0 18px;
-    font-size: 14px;
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 1.25rem;
+    color: var(--lanterne);
   }
   :global(.ajoute) {
-    background: #1d7a43 !important;
-    border-color: #1d7a43 !important;
+    background: #3f7a52 !important;
+    border-color: #3f7a52 !important;
+    color: #fff !important;
   }
 
   /* Fenêtre détaillée */
@@ -245,13 +217,13 @@ const filtres = [
     width: min(92vw, 820px);
     max-height: 90vh;
     padding: 0;
-    border: 2px solid var(--noir);
+    border: 1px solid var(--ligne-forte);
     border-radius: var(--rayon);
-    background: var(--papier);
-    color: var(--noir);
+    background: var(--surface);
+    color: var(--papier);
   }
   .modale::backdrop {
-    background: rgb(21 21 21 / 0.6);
+    background: rgba(8, 10, 14, 0.72);
   }
   @media (prefers-reduced-motion: no-preference) {
     .modale[open] {
@@ -267,15 +239,20 @@ const filtres = [
   .modale__corps {
     position: relative;
     display: grid;
-    grid-template-columns: 0.9fr 1.1fr;
-    gap: 28px;
-    padding: 32px;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 32px;
+    padding: 36px;
     align-items: center;
+  }
+  .modale__visuel {
+    padding: 24px;
+    border-radius: 10px;
+    background: radial-gradient(60% 55% at 50% 45%, rgba(240, 162, 59, 0.18), transparent 70%), var(--surface-2);
   }
   .modale__fermer {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 10px;
+    right: 10px;
     display: grid;
     place-items: center;
     width: 44px;
@@ -286,30 +263,34 @@ const filtres = [
     cursor: pointer;
   }
   .modale__fermer:hover {
-    background: rgb(21 21 21 / 0.08);
+    background: var(--surface-2);
   }
   .modale__texte {
     display: grid;
     gap: 10px;
   }
   .modale__texte h3 {
-    font-size: clamp(1.8rem, 1.3rem + 1.5vw, 2.6rem);
+    font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.4rem);
+    font-weight: 800;
   }
   .modale__texte h4 {
     margin: 10px 0 0;
+    font-family: var(--mono);
+    font-weight: 500;
     font-size: 13px;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
+    color: var(--lanterne);
   }
   .modale__ja {
     margin-top: -6px;
-    color: var(--rouge-fonce);
-    font-size: 1.1rem;
+    font-size: 15px;
+    color: var(--texte-2);
   }
   .modale__prix {
-    font-family: var(--titre);
-    font-size: 1.5rem;
-    color: var(--rouge-fonce);
+    font-family: var(--mono);
+    font-size: 1.4rem;
+    color: var(--lanterne);
   }
   .modale__allergenes {
     display: flex;
@@ -319,8 +300,7 @@ const filtres = [
   .modale__allergenes li {
     padding: 4px 12px;
     border-radius: 999px;
-    background: var(--noir);
-    color: var(--papier);
+    border: 1px solid var(--ligne-forte);
     font-size: 14px;
     font-weight: 700;
   }
@@ -333,26 +313,31 @@ const filtres = [
     .carte__grille {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-    .carte__tete {
-      grid-template-columns: 1fr;
-    }
   }
   @media (max-width: 639px) {
     .carte__grille {
       grid-template-columns: 1fr;
     }
+    .roll-carte__ouvrir :global(.roll-carte__visuel) {
+      aspect-ratio: 16 / 10 !important;
+    }
+    .roll-carte__ouvrir :global(.roll-carte__temaki) {
+      width: 34%;
+    }
     .modale__corps {
       grid-template-columns: 1fr;
-      padding: 24px;
+      padding: 56px 22px 24px;
+      gap: 20px;
     }
     .modale__visuel {
       width: 60%;
       margin-inline: auto;
+      padding: 16px;
     }
   }
   @media (prefers-reduced-motion: reduce) {
     .roll-carte,
-    .roll-carte__visuel {
+    .roll-carte__ouvrir :global(.roll-carte__temaki) {
       transition: none;
     }
   }

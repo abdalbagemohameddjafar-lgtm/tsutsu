@@ -1,13 +1,7 @@
 ---
-// Réservation et infos : formulaire (validation côté navigateur, envoi Web3Forms),
-// horaires, carte OpenStreetMap, téléphone cliquable. Logique : src/scripts/reservation.ts
-import { restaurant, horairesTexte, web3formsKey } from '../config/restaurant';
-
-const { adresse, carte } = restaurant;
-// Carte OpenStreetMap intégrée (position indicative : centre de Metz)
-const d = 0.006;
-const osm = `https://www.openstreetmap.org/export/embed.html?bbox=${carte.lon - d}%2C${carte.lat - d / 2}%2C${carte.lon + d}%2C${carte.lat + d / 2}&layer=mapnik&marker=${carte.lat}%2C${carte.lon}`;
-const osmLien = `https://www.openstreetmap.org/?mlat=${carte.lat}&mlon=${carte.lon}#map=17/${carte.lat}/${carte.lon}`;
+// Réservation : formulaire (validation côté navigateur, envoi Web3Forms). Logique : src/scripts/reservation.ts
+// (Horaires, adresse, téléphone et plan : composant Infos.astro.)
+import { web3formsKey } from '../config/restaurant';
 
 // Heures proposées : toutes les 30 min de 11h à 21h30
 const heures: string[] = [];
@@ -16,15 +10,15 @@ for (let m = 11 * 60; m <= 21 * 60 + 30; m += 30) {
 }
 ---
 
-<section class="section reservation" id="reservation" aria-labelledby="reservation-titre">
+<section class="section reservation" id="reserver" aria-labelledby="reservation-titre">
   <div class="conteneur reservation__grille">
-    <!-- 予約 (yoyaku) : « réservation » -->
-    <p class="tategaki tategaki--marge" lang="ja" aria-hidden="true">予約</p>
-    <div>
-      <h2 id="reservation-titre" data-apparition>Réserver une <span class="rouge">table.</span></h2>
+    <div class="reservation__tete">
+      <p class="surtitre" data-apparition>Sur place</p>
+      <h2 id="reservation-titre" data-apparition>Une place au comptoir</h2>
       <p class="chapo reservation__intro" data-apparition style="--rang: 1">
-        Quelques places au comptoir pour manger sur place. Réservez, on vous rappelle pour confirmer.
+        Douze tabourets face à la planche, pas un de plus. Réservez le vôtre, on vous rappelle pour confirmer.
       </p>
+    </div>
 
       <form class="reservation__form" data-reservation data-cle={web3formsKey} novalidate>
         <label class="champ plein">
@@ -63,31 +57,6 @@ for (let m = 11 * 60; m <= 21 * 60 + 30; m += 30) {
         </div>
         <p class="plein reservation__retour" data-reservation-retour role="status" aria-live="polite"></p>
       </form>
-    </div>
-
-    <aside class="reservation__infos" aria-label="Informations pratiques">
-      <div class="info">
-        <h3>Horaires</h3>
-        {horairesTexte.map((h) => <p><strong>{h.jours}</strong> · {h.heures}</p>)}
-        <p class="info__statut" data-statut><span class="info__ja" data-statut-ja aria-hidden="true">営業時間</span><span data-statut-texte></span></p>
-      </div>
-      <div class="info">
-        <h3>Adresse</h3>
-        <address>{adresse.rue}, {adresse.codePostal} {adresse.ville}</address>
-        <a class="bouton bouton--noir info__tel" href={`tel:${restaurant.telephone.lien}`}>
-          Appeler · {restaurant.telephone.affichage}
-        </a>
-      </div>
-      <div class="carte-osm">
-        <iframe
-          title="Plan d’accès à TSUTSU (OpenStreetMap)"
-          src={osm}
-          loading="lazy"
-          referrerpolicy="no-referrer"
-        ></iframe>
-        <a class="lien" href={osmLien} rel="noopener">Agrandir le plan</a>
-      </div>
-    </aside>
   </div>
 </section>
 
@@ -96,19 +65,27 @@ for (let m = 11 * 60; m <= 21 * 60 + 30; m += 30) {
 </script>
 
 <style>
+  .reservation {
+    background: var(--surface);
+    border-block: 1px solid var(--ligne);
+  }
   .reservation__grille {
     display: grid;
-    grid-template-columns: 1.15fr 1fr;
-    gap: clamp(40px, 6vw, 96px);
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(32px, 6vw, 96px);
     align-items: start;
   }
-  .reservation__intro {
-    margin: 24px 0 36px;
+  .reservation__tete {
+    display: grid;
+    gap: 16px;
   }
   .reservation__form {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 18px;
+  }
+  .reservation__form .champ :is(input, select) {
+    background: var(--encre);
   }
   .plein {
     grid-column: 1 / -1;
@@ -118,61 +95,10 @@ for (let m = 11 * 60; m <= 21 * 60 + 30; m += 30) {
   }
   .reservation__retour {
     padding: 14px 16px;
-    border: 2px solid var(--noir);
+    border: 1px solid var(--lanterne);
     border-radius: 10px;
-    background: #fff;
-    font-weight: 600;
-  }
-  .reservation__infos {
-    display: grid;
-    gap: 20px;
-  }
-  .info {
-    padding: 24px;
-    background: #fff;
-    border: 2px solid var(--noir);
-    border-radius: var(--rayon);
-    display: grid;
-    gap: 8px;
-  }
-  .info address {
-    font-style: normal;
-  }
-  .info__tel {
-    justify-self: start;
-    margin-top: 8px;
-  }
-  .info__statut {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 700;
-  }
-  .info__ja {
-    flex-shrink: 0;
-    white-space: nowrap;
-    padding: 3px 7px;
-    border-radius: 3px;
-    background: var(--noir);
-    color: #fff;
-    font-family: var(--kanji);
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: 0.06em;
-  }
-  .info__statut[data-ouvert='true'] .info__ja {
-    background: var(--rouge-fonce);
-  }
-  .carte-osm {
-    display: grid;
-    gap: 10px;
-  }
-  .carte-osm iframe {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    border: 2px solid var(--noir);
-    border-radius: var(--rayon);
-    background: #e8e4dc;
+    background: rgba(240, 162, 59, 0.08);
+    font-weight: 500;
   }
   @media (max-width: 899px) {
     .reservation__grille {

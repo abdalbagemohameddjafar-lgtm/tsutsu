@@ -1,9 +1,9 @@
 """
-Fabrique une version allégée de la police japonaise Dela Gothic One, qui ne contient
+Fabrique une version allégée de la partie japonaise de Shippori Mincho B1 (graisse 700), qui ne contient
 QUE les caractères japonais réellement utilisés sur le site.
 
-Pourquoi : le fichier complet pèse ~920 Ko (des milliers de kanji) et ralentissait
-fortement le site sur mobile. La version allégée pèse quelques Ko.
+Pourquoi : le fichier complet pèse ~2 Mo (des milliers de kanji). La version allégée
+pèse quelques Ko. Elle sert au logo 筒, aux noms japonais des recettes et aux rares touches japonaises.
 
 Quand le relancer : après avoir ajouté ou modifié du texte japonais dans src/.
     python outils/police-japonaise.py
@@ -16,8 +16,8 @@ from pathlib import Path
 from fontTools import subset
 
 RACINE = Path(__file__).resolve().parent.parent
-SOURCE = RACINE / 'node_modules/@fontsource/dela-gothic-one/files/dela-gothic-one-japanese-400-normal.woff2'
-SORTIE = RACINE / 'public/fonts/dela-gothic-one-tsutsu.woff2'
+SOURCE = RACINE / 'node_modules/@fontsource/shippori-mincho-b1/files/shippori-mincho-b1-japanese-700-normal.woff2'
+SORTIE = RACINE / 'public/fonts/shippori-mincho-b1-ja-700.woff2'
 
 def est_japonais(c: str) -> bool:
     n = ord(c)

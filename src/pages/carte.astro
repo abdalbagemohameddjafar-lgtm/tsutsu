@@ -1,7 +1,7 @@
 ---
 // Page /carte : toute la carte, ingrédients et allergènes. Version imprimable (feuille de style print).
 import Base from '../layouts/Base.astro';
-import Roll from '../components/Roll.astro';
+import Temaki from '../components/Temaki.astro';
 import Logo from '../components/Logo.astro';
 import { rolls, ALLERGENES, TAGS, sansGluten, type Allergene } from '../data/menu';
 import { restaurant, horairesTexte, offreEtudiante } from '../config/restaurant';
@@ -11,15 +11,14 @@ import { euros } from '../lib/format';
 const presents = (Object.keys(ALLERGENES) as Allergene[]).filter((a) => rolls.some((r) => r.allergenes.includes(a)));
 ---
 
-<Base titre="La carte et les allergènes · TSUTSU Metz" description="Carte complète de TSUTSU : six rolls en tube de 8,90 € à 10,90 €, ingrédients et allergènes.">
+<Base titre="La carte et les allergènes · TSUTSU, comptoir à temaki à Metz" description="Carte complète de TSUTSU : six temaki roulés à la main, de 8,90 € à 10,90 €, avec ingrédients et allergènes.">
   <div class="page-carte conteneur">
-    <p class="tategaki tategaki--marge page-carte__ja ecran-seulement" lang="ja" aria-hidden="true">お品書き</p>
     <div class="page-carte__tete">
       <p class="imprime-seulement"><Logo /></p>
-      <h1>La <span class="rouge">carte.</span></h1>
-      <p class="chapo">Six rolls, un seul format : un long maki roulé minute dans son étui kraft. Tout est halal.</p>
+      <h1>La carte du comptoir</h1>
+      <p class="chapo">Six temaki roulés à la commande, à manger tant que la nori croque. Tout est halal.</p>
       <div class="page-carte__actions ecran-seulement">
-        <button class="bouton bouton--noir" type="button" data-imprimer>Imprimer la carte</button>
+        <button class="bouton bouton--contour" type="button" data-imprimer>Imprimer la carte</button>
         <button class="bouton" type="button" data-ouvrir-panier aria-haspopup="dialog">Commander <span class="fleche" aria-hidden="true">→</span></button>
       </div>
     </div>
@@ -27,7 +26,7 @@ const presents = (Object.keys(ALLERGENES) as Allergene[]).filter((a) => rolls.so
     <ul class="liste-rolls" role="list">
       {rolls.map((r) => (
         <li class="ligne-roll">
-          <div class="ligne-roll__visuel"><Roll roll={r} /></div>
+          <div class="ligne-roll__visuel"><Temaki roll={r} /></div>
           <div class="ligne-roll__texte">
             <h2 class="ligne-roll__nom">{r.nom} <span class="ja ligne-roll__ja" lang="ja">{r.nomJa}</span></h2>
             <p>{r.description}</p>
@@ -52,7 +51,7 @@ const presents = (Object.keys(ALLERGENES) as Allergene[]).filter((a) => rolls.so
       <table class="allergenes">
         <thead>
           <tr>
-            <th scope="col">Roll</th>
+            <th scope="col">Temaki</th>
             {presents.map((a) => <th scope="col">{ALLERGENES[a]}</th>)}
           </tr>
         </thead>
@@ -69,8 +68,8 @@ const presents = (Object.keys(ALLERGENES) as Allergene[]).filter((a) => rolls.so
       </table>
     </div>
     <p class="discret note">
-      Nos rolls sont préparés dans une cuisine qui utilise les 14 allergènes réglementaires : des traces sont possibles.
-      Une question ? Appelez-nous au <a href={`tel:${restaurant.telephone.lien}`}>{restaurant.telephone.affichage}</a>.
+      Nos temaki sont préparés dans une cuisine qui utilise les 14 allergènes réglementaires : des traces sont possibles.
+      Une question ? Appelez-nous au <a class="lien" href={`tel:${restaurant.telephone.lien}`}>{restaurant.telephone.affichage}</a>.
     </p>
 
     <div class="infos-pied">
@@ -100,7 +99,7 @@ const presents = (Object.keys(ALLERGENES) as Allergene[]).filter((a) => rolls.so
     gap: 12px;
   }
   .liste-rolls {
-    border-top: 2px solid var(--noir);
+    border-top: 1px solid var(--ligne-forte);
   }
   .ligne-roll {
     display: grid;
@@ -108,7 +107,7 @@ const presents = (Object.keys(ALLERGENES) as Allergene[]).filter((a) => rolls.so
     gap: 24px;
     align-items: center;
     padding: 24px 0;
-    border-bottom: 1.5px solid var(--filet);
+    border-bottom: 1px solid var(--ligne);
   }
   .ligne-roll__texte {
     display: grid;
@@ -117,25 +116,24 @@ const presents = (Object.keys(ALLERGENES) as Allergene[]).filter((a) => rolls.so
   .ligne-roll__nom {
     font-size: clamp(1.6rem, 1.2rem + 1.2vw, 2.4rem);
   }
-  .page-carte__ja {
-    top: calc(var(--header) + clamp(40px, 6vw, 80px));
-  }
   .ligne-roll__ja {
     display: block;
     margin-top: 6px;
-    font-size: 0.5em;
-    color: var(--rouge-fonce);
-    text-transform: none;
+    font-size: 15px;
+    color: var(--texte-2);
   }
   .ligne-roll__tags {
-    font-weight: 800;
+    font-family: var(--mono);
+    color: var(--lanterne);
+    font-weight: 500;
     font-size: 13px;
     letter-spacing: 0.05em;
     text-transform: uppercase;
   }
   .ligne-roll__prix {
-    font-family: var(--titre);
-    font-size: 1.8rem;
+    font-family: var(--mono);
+    font-size: 1.4rem;
+    color: var(--lanterne);
     white-space: nowrap;
   }
   .titre-tableau {
@@ -144,9 +142,9 @@ const presents = (Object.keys(ALLERGENES) as Allergene[]).filter((a) => rolls.so
   }
   .tableau-defile {
     overflow-x: auto;
-    border: 2px solid var(--noir);
+    border: 1px solid var(--ligne-forte);
     border-radius: var(--rayon);
-    background: #fff;
+    background: var(--surface);
   }
   .allergenes {
     width: 100%;
@@ -156,23 +154,25 @@ const presents = (Object.keys(ALLERGENES) as Allergene[]).filter((a) => rolls.so
   .allergenes th,
   .allergenes td {
     padding: 12px 14px;
-    border-bottom: 1px solid var(--filet);
+    border-bottom: 1px solid var(--ligne);
     text-align: center;
     white-space: nowrap;
   }
   .allergenes thead th {
-    background: var(--noir);
+    background: var(--surface-2);
     color: var(--papier);
+    font-family: var(--mono);
+    font-weight: 500;
     font-size: 13px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
   .allergenes tbody th {
     text-align: left;
-    font-weight: 800;
+    font-weight: 700;
   }
   .allergenes td {
-    color: var(--rouge-fonce);
+    color: var(--lanterne);
     font-size: 18px;
   }
   .note {
@@ -182,7 +182,7 @@ const presents = (Object.keys(ALLERGENES) as Allergene[]).filter((a) => rolls.so
   .infos-pied {
     margin-top: 40px;
     padding-top: 20px;
-    border-top: 2px solid var(--noir);
+    border-top: 1px solid var(--ligne-forte);
     display: grid;
     gap: 6px;
   }
@@ -212,7 +212,17 @@ const presents = (Object.keys(ALLERGENES) as Allergene[]).filter((a) => rolls.so
     }
     :global(body) {
       background: #fff;
+      color: #000;
       font-size: 11pt;
+    }
+    .discret,
+    .ligne-roll__prix,
+    .ligne-roll__tags,
+    .allergenes td {
+      color: #000;
+    }
+    .tableau-defile {
+      background: #fff;
     }
     .page-carte {
       padding: 0;

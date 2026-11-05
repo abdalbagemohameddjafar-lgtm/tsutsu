@@ -1,6 +1,6 @@
 # TSUTSU 筒 — site de démonstration
 
-Site vitrine d'un restaurant **fictif** de sushis en tube, réalisé par **Pyke Studio** pour son portfolio
+Site vitrine d'un restaurant **fictif** : un comptoir à temaki (cônes de nori roulés à la main) à Metz, ambiance izakaya du soir, réalisé par **Pyke Studio** pour son portfolio
 (offre « Vitrine + »). Astro + TypeScript + CSS natif, 100 % statique, prêt pour Cloudflare Pages.
 
 ## Lancer le site sur votre ordinateur
@@ -14,7 +14,7 @@ npm run preview    # affiche le site final : http://localhost:4321
 
 ## Modifier la carte
 
-Tout est dans **`src/data/menu.ts`**. Chaque roll ressemble à ceci :
+Tout est dans **`src/data/menu.ts`**. Chaque temaki ressemble à ceci :
 
 ```ts
 {
@@ -29,8 +29,8 @@ Tout est dans **`src/data/menu.ts`**. Chaque roll ressemble à ceci :
 },
 ```
 
-- **Ajouter un roll** : copiez un bloc, changez l'`id` et les textes.
-- **« Sans gluten »** est calculé tout seul : un roll sans `'gluten'` dans ses allergènes reçoit l'étiquette.
+- **Ajouter un temaki** : copiez un bloc, changez l'`id` et les textes.
+- **« Sans gluten »** est calculé tout seul : une recette sans `'gluten'` dans ses allergènes reçoit l'étiquette.
 - La section « La carte », la page `/carte` (imprimable), le panier et les données Google se mettent à jour automatiquement.
 
 ## Modifier les horaires, l'adresse, le téléphone, WhatsApp
@@ -41,7 +41,8 @@ Tout est dans **`src/config/restaurant.ts`** :
   « Ouvert maintenant / Fermé », aux créneaux de retrait et aux données Google.
 - `horairesTexte` : le texte affiché sur le site (gardez-le identique aux horaires).
 - `whatsapp` : numéro au format international **sans le +** (ex. `33612345678`). C'est lui qui reçoit les commandes.
-- `telephone`, `adresse`, `carte` (position du plan), `instagram`, `offreEtudiante`.
+- `telephone`, `adresse`, `instagram`, `offreEtudiante`.
+- `COORDONNEES_PLAN` : position du plan OpenStreetMap — **à remplacer par l'adresse réelle du client**.
 - `retrait` : intervalle entre deux créneaux (15 min), délai de préparation.
 
 > Les numéros actuels (06 39 98 …) sont dans la plage réservée par l'ARCEP à la fiction : ils ne
@@ -57,6 +58,22 @@ Le site est statique : les formulaires passent par **Web3Forms** (gratuit).
 
 Sans clé, tout fonctionne (validation, panier, WhatsApp) mais la réservation et l'envoi par e-mail
 affichent « site de démonstration » au lieu d'envoyer.
+
+## Photos du client
+
+Le composant **`src/components/Photo.astro`** affiche une illustration tant qu'il n'y a pas de photo.
+Pour mettre les vraies photos : déposez-les dans `public/photos/` (JPG + WebP), puis :
+
+- **hero** et **comptoir** : ajoutez `src="/photos/hero.jpg" webp="/photos/hero.webp"` sur le `<Photo>` correspondant dans `src/pages/index.astro` ;
+- **produits** : ajoutez `photo: '/photos/<id>.jpg'` (et `photoWebp`) au temaki dans `src/data/menu.ts`.
+
+Le texte `alt` est obligatoire : décrivez ce qu'on voit.
+
+## Polices
+
+Shippori Mincho B1 (titres), Zen Kaku Gothic New (texte), DM Mono (prix et chiffres), auto-hébergées via fontsource.
+Les caractères japonais utilisent une version allégée de Shippori Mincho B1 (`public/fonts/`, ~10 Ko) :
+après un ajout de texte japonais, relancez `python outils/police-japonaise.py` (nécessite `pip install fonttools brotli`).
 
 ## Fonctions « Vitrine + »
 
@@ -85,28 +102,17 @@ Chaque envoi sur GitHub redéploie le site automatiquement.
 ```
 src/
   config/restaurant.ts   coordonnées, horaires, WhatsApp, offre étudiante
-  data/menu.ts           la carte (rolls, allergènes, ingrédients)
+  data/menu.ts           la carte (temaki, allergènes, ingrédients)
   lib/                   horaires (ouvert/fermé, créneaux) et format des prix
   layouts/               gabarit commun (SEO, JSON-LD Restaurant) et pages de texte
-  components/            en-tête, tube SVG, rolls SVG, carte, panier, réservation, pied de page…
-  scripts/               JavaScript natif : panier, filtres, réservation, apparitions, tube
+  components/            en-tête, Photo, Temaki et Lanterne (SVG), carte, panier, réservation, infos, pied de page…
+  scripts/               JavaScript natif : panier, filtres, réservation, apparitions
   styles/global.css      couleurs, typographies, boutons
   pages/                 accueil, /carte, mentions légales, confidentialité, 404
 public/                  icônes, image de partage, robots.txt
 ```
 
-Polices : Archivo Black (titres), Inter (texte) et Dela Gothic One (grands caractères japonais),
-hébergées avec le site. Les petits textes japonais utilisent la police japonaise du système.
-
-## Ajouter du texte japonais
-
-La police japonaise est **allégée** : elle ne contient que les caractères déjà présents sur le site
-(11 Ko au lieu de 920 Ko). Après avoir ajouté un mot japonais, régénérez-la :
-
-```bash
-pip install fonttools brotli          # une seule fois
-python outils/police-japonaise.py
-```
+Polices : voir la section « Polices » plus haut.
 
 Sans cette étape, le nouveau caractère s'affiche quand même, dans la police japonaise du système.
 Animations désactivées si l'appareil demande de réduire les mouvements.

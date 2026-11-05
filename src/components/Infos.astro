@@ -1,0 +1,132 @@
+---
+// Infos pratiques — le SEUL endroit du contenu avec horaires, statut, adresse, téléphone et plan.
+// Coordonnées du plan : COORDONNEES_PLAN dans src/config/restaurant.ts.
+import { restaurant, horairesTexte, COORDONNEES_PLAN } from '../config/restaurant';
+
+const { adresse } = restaurant;
+const { lat, lon } = COORDONNEES_PLAN;
+const d = 0.006;
+const osm = `https://www.openstreetmap.org/export/embed.html?bbox=${lon - d}%2C${lat - d / 2}%2C${lon + d}%2C${lat + d / 2}&layer=mapnik&marker=${lat}%2C${lon}`;
+const osmLien = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=17/${lat}/${lon}`;
+---
+
+<section class="section infos" id="infos" aria-labelledby="infos-titre">
+  <div class="conteneur infos__grille">
+    <div class="infos__texte">
+      <h2 id="infos-titre" data-apparition>Infos</h2>
+
+      <dl class="infos__liste">
+        <div>
+          <dt>Horaires</dt>
+          <dd>
+            {horairesTexte.map((h) => <p>{h.jours} · <span class="mono">{h.heures}</span></p>)}
+            <p class="infos__statut" data-statut><span class="infos__point" aria-hidden="true"></span><span data-statut-texte></span></p>
+          </dd>
+        </div>
+        <div>
+          <dt>Adresse</dt>
+          <dd><address>{adresse.rue}<br />{adresse.codePostal} {adresse.ville}</address></dd>
+        </div>
+        <div>
+          <dt>Téléphone</dt>
+          <dd><a class="lien mono" href={`tel:${restaurant.telephone.lien}`}>{restaurant.telephone.affichage}</a></dd>
+        </div>
+      </dl>
+      <button class="bouton" type="button" data-ouvrir-panier aria-haspopup="dialog">Commander en click & collect <span class="fleche" aria-hidden="true">→</span></button>
+    </div>
+
+    <div class="infos__plan">
+      <iframe title="Plan d’accès à TSUTSU (OpenStreetMap)" src={osm} loading="lazy" referrerpolicy="no-referrer"></iframe>
+      <a class="lien" href={osmLien} rel="noopener">Agrandir le plan</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .infos__grille {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: clamp(32px, 6vw, 96px);
+    align-items: start;
+  }
+  .infos__texte {
+    display: grid;
+    gap: 32px;
+    justify-items: start;
+  }
+  .infos__liste {
+    display: grid;
+    width: 100%;
+    border-top: 1px solid var(--ligne);
+  }
+  .infos__liste > div {
+    display: grid;
+    grid-template-columns: 9.5rem 1fr;
+    gap: 8px 24px;
+    padding-block: 18px;
+    border-bottom: 1px solid var(--ligne);
+  }
+  .infos__liste dt {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--lanterne);
+    padding-top: 4px;
+  }
+  .infos__liste dd {
+    display: grid;
+    gap: 4px;
+  }
+  .infos__liste address {
+    font-style: normal;
+  }
+  .infos__liste .lien {
+    min-height: 44px;
+    margin-block: -10px;
+    font-size: 1.1rem;
+  }
+  .infos__statut {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--texte-2);
+    font-size: 15px;
+  }
+  .infos__point {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--texte-2);
+  }
+  .infos__statut[data-ouvert='true'] {
+    color: var(--lanterne);
+  }
+  .infos__statut[data-ouvert='true'] .infos__point {
+    background: var(--lanterne);
+    box-shadow: 0 0 0 4px rgba(240, 162, 59, 0.2);
+  }
+  .infos__plan {
+    display: grid;
+    gap: 6px;
+    justify-items: start;
+  }
+  .infos__plan iframe {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--ligne-forte);
+    border-radius: var(--rayon);
+    background: var(--surface);
+    filter: grayscale(0.35) brightness(0.92);
+  }
+  @media (max-width: 899px) {
+    .infos__grille {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 479px) {
+    .infos__liste > div {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
